@@ -1,23 +1,21 @@
 "use client";
 
 import { Waitlist } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
 
-const ink = "#E8E6E0";
-const surface = "#11141C";
+const ink = "#1A1815";
+const surface = "#F5F2EA";
 
 export function ClerkWaitlist() {
   return (
     <div className="w-full max-w-full">
       <Waitlist
         appearance={{
-          baseTheme: dark,
           variables: {
-            colorPrimary: "#5B7A9E",
+            colorPrimary: "#3A5F82",
             colorText: ink,
-            colorTextSecondary: "rgba(232,230,224,0.55)",
+            colorTextSecondary: "rgba(26,24,21,0.55)",
             colorBackground: surface,
-            colorInputBackground: "#161A24",
+            colorInputBackground: "#FDFBF7",
             colorInputText: ink,
           },
         }}

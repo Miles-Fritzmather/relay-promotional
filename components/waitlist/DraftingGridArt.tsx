@@ -14,7 +14,7 @@ export function DraftingGridArt({ className = "" }: { className?: string }) {
         width="399"
         height="319"
         rx="2"
-        stroke="rgba(232,230,224,0.07)"
+        stroke="rgba(26,24,21,0.1)"
         strokeWidth="1"
       />
       {Array.from({ length: 12 }).map((_, i) => (
@@ -24,7 +24,7 @@ export function DraftingGridArt({ className = "" }: { className?: string }) {
           y1="8"
           x2={40 + i * 28}
           y2="312"
-          stroke="rgba(232,230,224,0.04)"
+          stroke="rgba(26,24,21,0.05)"
           strokeWidth="0.5"
         />
       ))}
@@ -35,7 +35,7 @@ export function DraftingGridArt({ className = "" }: { className?: string }) {
           y1={32 + i * 28}
           x2="392"
           y2={32 + i * 28}
-          stroke="rgba(232,230,224,0.04)"
+          stroke="rgba(26,24,21,0.05)"
           strokeWidth="0.5"
         />
       ))}
@@ -44,7 +44,7 @@ export function DraftingGridArt({ className = "" }: { className?: string }) {
         y="48"
         width="120"
         height="72"
-        stroke="rgba(91,122,158,0.35)"
+        stroke="rgba(122,72,88,0.35)"
         strokeWidth="0.75"
       />
       <rect
@@ -52,16 +52,16 @@ export function DraftingGridArt({ className = "" }: { className?: string }) {
         y="120"
         width="152"
         height="96"
-        stroke="rgba(232,230,224,0.1)"
+        stroke="rgba(26,24,21,0.12)"
         strokeWidth="0.75"
       />
       <path
         d="M56 200 L180 200 L180 248 L56 248 Z"
-        stroke="rgba(232,230,224,0.08)"
+        stroke="rgba(26,24,21,0.09)"
         strokeWidth="0.6"
         fill="none"
       />
-      <circle cx="320" cy="64" r="24" stroke="rgba(91,122,158,0.25)" strokeWidth="0.75" />
+      <circle cx="320" cy="64" r="24" stroke="rgba(122,72,88,0.25)" strokeWidth="0.75" />
     </svg>
   );
 }

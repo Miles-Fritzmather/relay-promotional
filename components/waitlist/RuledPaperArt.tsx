@@ -12,7 +12,7 @@ export function RuledPaperArt({ className = "" }: { className?: string }) {
         width="280"
         height="240"
         rx="3"
-        stroke="rgba(232,230,224,0.08)"
+        stroke="rgba(26,24,21,0.1)"
         strokeWidth="0.75"
       />
       <line
@@ -20,7 +20,7 @@ export function RuledPaperArt({ className = "" }: { className?: string }) {
         y1="12"
         x2="36"
         y2="228"
-        stroke="rgba(91,122,158,0.35)"
+        stroke="rgba(58,95,130,0.45)"
         strokeWidth="0.75"
       />
       {Array.from({ length: 14 }).map((_, i) => (
@@ -30,7 +30,7 @@ export function RuledPaperArt({ className = "" }: { className?: string }) {
           y1={24 + i * 14}
           x2="268"
           y2={24 + i * 14}
-          stroke="rgba(232,230,224,0.05)"
+          stroke="rgba(26,24,21,0.07)"
           strokeWidth="0.5"
         />
       ))}
@@ -40,7 +40,7 @@ export function RuledPaperArt({ className = "" }: { className?: string }) {
         width="200"
         height="8"
         rx="1"
-        fill="rgba(232,230,224,0.04)"
+        fill="rgba(26,24,21,0.05)"
       />
       <rect
         x="52"
@@ -48,7 +48,7 @@ export function RuledPaperArt({ className = "" }: { className?: string }) {
         width="140"
         height="6"
         rx="1"
-        fill="rgba(232,230,224,0.03)"
+        fill="rgba(26,24,21,0.04)"
       />
     </svg>
   );

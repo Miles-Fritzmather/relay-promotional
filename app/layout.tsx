@@ -23,9 +23,9 @@ const instrumentSerif = Instrument_Serif({
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Relay — Your timesheet, drafted for you",
+  title: "Relay — Legal AI, private by default",
   description:
-    "Relay drafts billable time from your inbox and calendar — locally. You review and export.",
+    "Relay is a fully local AI platform for law firms. Knowledge wiki, autonomous billing, in-depth research, and agentic workflows — all on your hardware, never ours.",
 };
 
 export default function RootLayout({

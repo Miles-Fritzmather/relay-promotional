@@ -13,16 +13,13 @@ const config: Config = {
       },
       colors: {
         relay: {
-          /** Deep ink-navy field — sober, institutional without default SaaS gray */
-          bg: "#0B0D12",
-          surface: "#11141C",
-          elevated: "#161A24",
-          cream: "#E8E6E0",
-          /** Muted steel blue — trust, primary actions (replaces hot pink as default accent) */
-          accent: "#5B7A9E",
-          "accent-hover": "#6D8CB0",
-          /** Eyebrow / rare emphasis only */
-          rose: "#8B5C6B",
+          bg: "#ECEAE3",
+          surface: "#F5F2EA",
+          elevated: "#FDFBF7",
+          cream: "#1A1815",
+          accent: "#3A5F82",
+          "accent-hover": "#4A6F92",
+          rose: "#7A4858",
         },
       },
       fontFamily: {
