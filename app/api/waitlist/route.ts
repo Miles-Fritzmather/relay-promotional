@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Waitlist API — stores emails in Vercel KV.
+ * Waitlist API — stores emails in Upstash Redis (Vercel Marketplace).
  *
- * Setup (one-time):
- *   1. In your Vercel project dashboard go to Storage → Create → KV.
- *   2. Link it to this project.
- *   3. Run `vercel env pull .env.local` to get KV_REST_API_URL / KV_REST_API_TOKEN locally.
+ * Setup (one-time, if not already done):
+ *   1. Vercel dashboard → Integrations → Browse Marketplace → search "Upstash Redis"
+ *   2. Install and create a Redis database, then connect it to this project.
+ *   3. Vercel will auto-inject UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
+ *   4. Run `vercel env pull .env.local` to get the vars locally.
  *
- * To read stored emails later:
- *   vercel kv lrange relay:waitlist 0 -1
+ * Read stored emails:
+ *   From Upstash console, or via: redis.lrange("relay:waitlist", 0, -1)
  */
 export async function POST(request: NextRequest) {
   let email: string;
@@ -27,18 +28,22 @@ export async function POST(request: NextRequest) {
 
   const entry = JSON.stringify({ email, joinedAt: new Date().toISOString() });
 
-  // Persist to Vercel KV when env vars are present
-  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+  if (
+    process.env.UPSTASH_REDIS_REST_URL &&
+    process.env.UPSTASH_REDIS_REST_TOKEN
+  ) {
     try {
-      const { kv } = await import("@vercel/kv");
-      await kv.lpush("relay:waitlist", entry);
+      const { Redis } = await import("@upstash/redis");
+      const redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      });
+      await redis.lpush("relay:waitlist", entry);
     } catch (err) {
-      console.error("[waitlist] KV write failed:", err);
-      // Don't surface the error to the user — log it and continue
+      console.error("[waitlist] Redis write failed:", err);
     }
   } else {
-    // No KV configured — log to stdout (visible in Vercel function logs)
-    console.log("[waitlist] New signup:", entry);
+    console.log("[waitlist] No Redis configured. New signup:", entry);
   }
 
   return NextResponse.json({ success: true });
