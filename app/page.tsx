@@ -156,18 +156,18 @@ const features = [
 	{
 		num: "01",
 		accent: "var(--coral)",
-		title: "Table of Contents",
-		body: "Automatically generate a structured, hyperlinked table of contents for any legal document — from contracts to briefs — in seconds. No more manual formatting.",
-		tag: "Document Intelligence",
+		title: "Filing Confidence",
+		body: "Check citations, generate tables of contents and authorities, and evaluate argument strength — all in one place. File with confidence.",
+		tag: "Smart Filing",
 		tagBg: "color-mix(in srgb, var(--coral) 12%, transparent)",
 		tagColor: "var(--coral)",
 	},
 	{
 		num: "02",
 		accent: "var(--gold)",
-		title: "Table of Authorities",
-		body: "Every case citation, statute, and regulation — identified, organized, and formatted to court standards. Relay reads your brief and builds the TOA automatically.",
-		tag: "Citation Analysis",
+		title: "Case Analysis",
+		body: "Upload and analyze documents in a secure, local system — not the cloud. Generate charts and visualizations for presentations, and extract insights from deposition transcripts.",
+		tag: "Document Analysis",
 		tagBg: "color-mix(in srgb, var(--gold) 12%, transparent)",
 		tagColor: "var(--gold)",
 	},
@@ -175,7 +175,7 @@ const features = [
 		num: "03",
 		accent: "var(--teal)",
 		title: "Case Research",
-		body: "AI-powered legal research that understands jurisdiction, precedent, and the nuances of your matter. Surface relevant cases and statutes without leaving your desk.",
+		body: "AI-powered legal research that understands jurisdiction, precedent, and the nuances of your matter. Find relevant cases and statutes without leaving your desk.",
 		tag: "Legal Research",
 		tagBg: "color-mix(in srgb, var(--teal) 12%, transparent)",
 		tagColor: "var(--teal)",
@@ -205,7 +205,7 @@ const privacyPillars = [
 	{
 		title: "Bar-compliant by default",
 		accent: "var(--gold)",
-		body: "Designed with ABA Model Rules in mind. Relay is the AI your ethics counsel won't flag.",
+		body: "Your work stays yours: designed with confidentiality in mind. Relay is the AI that keeps your data on your machine.",
 	},
 ];
 
@@ -216,7 +216,7 @@ const planFeatures = [
 	"Automatic time tracking & billing export",
 	"Unlimited document uploads",
 	"Matter-level workspaces",
-	"All future features included",
+	"Access to future features at competitive pricing",
 ];
 
 export default function Home() {
@@ -296,14 +296,14 @@ export default function Home() {
 						className="block text-left font-semibold italic"
 						style={{ color: "var(--coral)" }}
 					>
-						Anything,
+						Anything.
 					</em>
 					<span className="block text-right">Track</span>
 					<em
 						className="block text-left font-semibold italic"
 						style={{ color: "var(--coral)" }}
 					>
-						Everything,
+						Everything.
 					</em>
 					<span className="block text-right">Share</span>
 					<em
@@ -660,7 +660,7 @@ export default function Home() {
 									</div>
 								</div>
 								<p className="mt-5 text-[0.82rem] font-light leading-[1.7] text-relay-ink-3">
-									Lock in early adopter pricing by joining the waitlist. Rate
+									Lock in early adopter pricing by joining the waitlist. Pricing
 									guaranteed for the lifetime of your subscription.
 								</p>
 							</div>
@@ -731,7 +731,7 @@ export default function Home() {
 					Be first in line.
 				</h2>
 				<p className="reveal mx-auto mb-12 max-w-[400px] text-[1.05rem] font-light leading-relaxed text-relay-ink-2">
-					We&apos;re rolling out to a small group of practices. Join the
+					We&apos;re rolling out to a small group of attorneys and support staff. Join the
 					waitlist and lock in early access pricing.
 				</p>
 				<div className="reveal flex justify-center">
@@ -755,19 +755,7 @@ export default function Home() {
 				</p>
 				<div className="flex gap-6">
 					<a
-						href="#"
-						className="text-[0.8rem] text-relay-ink-3 no-underline transition-colors hover:text-relay-ink"
-					>
-						Privacy
-					</a>
-					<a
-						href="#"
-						className="text-[0.8rem] text-relay-ink-3 no-underline transition-colors hover:text-relay-ink"
-					>
-						Terms
-					</a>
-					<a
-						href="mailto:hello@relaylegal.ai"
+						href="mailto:support@relay-law.com"
 						className="text-[0.8rem] text-relay-ink-3 no-underline transition-colors hover:text-relay-ink"
 					>
 						Contact
