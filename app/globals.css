@@ -116,3 +116,28 @@
     transform: scaleY(1.15);
   }
 }
+
+/* ── Mobile overrides ── */
+@media (max-width: 900px) {
+  .hero-headline {
+    display: block !important;
+    text-align: center;
+  }
+  .hero-headline > * {
+    display: inline !important;
+    text-align: center !important;
+  }
+  .hero-headline > em::after {
+    content: "\A";
+    white-space: pre;
+  }
+
+  .pricing-card {
+    grid-template-columns: 1fr !important;
+    padding: 32px 20px !important;
+    gap: 32px !important;
+  }
+  .pricing-divider {
+    display: none !important;
+  }
+}

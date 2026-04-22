@@ -87,7 +87,7 @@ function WaitlistForm({
 							required
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							className="min-w-[260px] flex-1 bg-transparent px-6 py-3.5 font-sans text-[0.95rem] text-relay-ink outline-none placeholder:text-relay-ink-3"
+							className="min-w-0 flex-1 bg-transparent px-6 py-3.5 font-sans text-[0.95rem] text-relay-ink outline-none placeholder:text-relay-ink-3"
 						/>
 						<button
 							type="submit"
@@ -116,7 +116,7 @@ function WaitlistForm({
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="mx-auto flex w-full max-w-[480px] gap-2.5"
+			className="mx-auto flex mobile:flex-col w-full max-w-[480px] gap-2.5"
 		>
 			<input
 				type="email"
@@ -226,7 +226,7 @@ export default function Home() {
 		<>
 			{/* ── NAV ── */}
 			<nav
-				className="fixed left-0 right-0 top-0 z-[100] flex h-16 items-center justify-between px-12"
+				className="fixed left-0 right-0 top-0 z-[100] flex h-16 items-center justify-between px-12 mobile:px-5"
 				style={{
 					background: "color-mix(in srgb, var(--cream) 88%, transparent)",
 					backdropFilter: "blur(12px)",
@@ -240,16 +240,16 @@ export default function Home() {
 				>
 					Relay
 				</a>
-				<div className="flex items-center gap-8">
+				<div className="flex items-center gap-8 mobile:gap-3">
 					<a
 						href="#features"
-						className="text-sm text-relay-ink-2 transition-colors hover:text-relay-ink"
+						className="text-sm text-relay-ink-2 transition-colors hover:text-relay-ink mobile:hidden"
 					>
 						Features
 					</a>
 					<a
 						href="#pricing"
-						className="text-sm text-relay-ink-2 transition-colors hover:text-relay-ink"
+						className="text-sm text-relay-ink-2 transition-colors hover:text-relay-ink mobile:hidden"
 					>
 						Pricing
 					</a>
@@ -278,9 +278,9 @@ export default function Home() {
 			</nav>
 
 			{/* ── HERO ── */}
-			<section className="hero-bg relative flex min-h-screen flex-col items-center justify-center px-12 pb-20 pt-[120px] text-center">
+			<section className="hero-bg relative overflow-x-hidden flex min-h-screen flex-col items-center justify-center px-12 mobile:px-6 pb-20 pt-[120px] text-center">
 				<h1
-					className="relative z-10 font-serif font-medium leading-[1.1] tracking-[-0.02em] opacity-0"
+					className="hero-headline relative z-10 font-serif font-medium leading-[1.1] tracking-[-0.02em] opacity-0"
 					style={{
 						fontSize: "clamp(2.6rem, 5.5vw, 5rem)",
 						display: "grid",
@@ -359,7 +359,7 @@ export default function Home() {
 			/>
 
 			{/* ── MISSION ── */}
-			<section className="mx-auto grid max-w-[1200px] grid-cols-2 items-center gap-20 px-12 py-[120px]">
+			<section className="mx-auto grid max-w-[1200px] grid-cols-2 mobile:grid-cols-1 items-center gap-20 mobile:gap-10 px-12 mobile:px-6 py-[120px] mobile:py-20">
 				<div className="reveal">
 					<p
 						className="mb-5 text-[0.75rem] font-medium uppercase tracking-[0.12em]"
@@ -426,12 +426,12 @@ export default function Home() {
 
 			{/* ── FEATURES ── */}
 			<section
-				className="py-[120px]"
+				className="py-[120px] mobile:py-20"
 				id="features"
 				style={{ background: "#F3EFE4" }}
 			>
-				<div className="mx-auto max-w-[1200px] px-12">
-					<div className="reveal mb-14 flex items-end justify-between">
+				<div className="mx-auto max-w-[1200px] px-12 mobile:px-6">
+					<div className="reveal mb-14 mobile:mb-8 flex items-end justify-between mobile:flex-col mobile:items-start mobile:gap-6">
 						<h2
 							className="max-w-[480px] font-serif font-normal leading-[1.15] tracking-[-0.015em]"
 							style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)" }}
@@ -444,17 +444,17 @@ export default function Home() {
 							</em>
 							.
 						</h2>
-						<p className="max-w-[260px] text-[0.95rem] font-light leading-[1.7] text-relay-ink-2">
+						<p className="max-w-[260px] mobile:max-w-full text-[0.95rem] font-light leading-[1.7] text-relay-ink-2">
 							Four tools, built for the documents and workflows lawyers actually
 							deal with every day.
 						</p>
 					</div>
 
-					<div className="grid grid-cols-2 gap-6">
+					<div className="grid grid-cols-2 mobile:grid-cols-1 gap-6">
 						{features.map((f) => (
 							<div
 								key={f.num}
-								className="reveal group relative overflow-hidden rounded-[14px] bg-relay-cream p-10 transition-all duration-300"
+								className="reveal group relative overflow-hidden rounded-[14px] bg-relay-cream p-10 mobile:p-6 transition-all duration-300"
 								style={{
 									border:
 										"1.5px solid color-mix(in srgb, var(--ink) 10%, transparent)",
@@ -505,7 +505,7 @@ export default function Home() {
 			</section>
 
 			{/* ── PRIVACY ── */}
-			<section className="mx-auto max-w-[1200px] px-12 py-[120px] text-center">
+			<section className="mx-auto max-w-[1200px] px-12 mobile:px-6 py-[120px] mobile:py-20 text-center">
 				<p
 					className="reveal mb-5 text-[0.75rem] font-medium uppercase tracking-[0.12em]"
 					style={{ color: "var(--coral)" }}
@@ -520,15 +520,15 @@ export default function Home() {
 					<br />
 					You should trust your tools.
 				</h2>
-				<p className="reveal mx-auto mb-[60px] max-w-[540px] text-[1.05rem] font-light leading-[1.8] text-relay-ink-2">
+				<p className="reveal mx-auto mb-[60px] mobile:mb-10 max-w-[540px] text-[1.05rem] font-light leading-[1.8] text-relay-ink-2">
 					Relay&apos;s architecture is built from the ground up to keep
 					everything in your office.
 				</p>
-				<div className="reveal grid grid-cols-3 gap-7">
+				<div className="reveal grid grid-cols-3 mobile:grid-cols-1 gap-7">
 					{privacyPillars.map((p) => (
 						<div
 							key={p.title}
-							className="rounded-[14px] bg-relay-cream p-10 text-left transition-all duration-300"
+							className="rounded-[14px] bg-relay-cream p-10 mobile:p-6 text-left transition-all duration-300"
 							style={{
 								border:
 									"1.5px solid color-mix(in srgb, var(--ink) 10%, transparent)",
@@ -572,7 +572,7 @@ export default function Home() {
 
 			{/* ── PRICING ── */}
 			<section
-				className="px-12 py-[120px]"
+				className="px-12 mobile:px-6 py-[120px] mobile:py-20"
 				id="pricing"
 				style={{ background: "#F3EFE4" }}
 			>
@@ -591,7 +591,7 @@ export default function Home() {
 
 					<div className="reveal mx-auto max-w-[860px]">
 						<div
-							className="grid items-start gap-12 rounded-2xl bg-relay-cream"
+							className="pricing-card grid items-start gap-12 rounded-2xl bg-relay-cream"
 							style={{
 								gridTemplateColumns: "1fr auto 1fr",
 								padding: "52px 56px",
@@ -667,7 +667,7 @@ export default function Home() {
 
 							{/* Divider */}
 							<div
-								className="self-stretch"
+								className="pricing-divider self-stretch"
 								style={{
 									width: "1px",
 									background: "color-mix(in srgb, var(--ink) 10%, transparent)",
@@ -715,7 +715,7 @@ export default function Home() {
 
 			{/* ── BOTTOM CTA ── */}
 			<section
-				className="bottom-cta-bg relative overflow-hidden px-12 py-[140px] text-center"
+				className="bottom-cta-bg relative overflow-hidden px-12 mobile:px-6 py-[140px] mobile:py-20 text-center"
 				id="waitlist"
 			>
 				<p
@@ -741,7 +741,7 @@ export default function Home() {
 
 			{/* ── FOOTER ── */}
 			<footer
-				className="flex items-center justify-between px-12 py-10"
+				className="flex items-center justify-between mobile:flex-col mobile:gap-4 px-12 mobile:px-6 py-10"
 				style={{
 					borderTop:
 						"1px solid color-mix(in srgb, var(--ink) 10%, transparent)",
