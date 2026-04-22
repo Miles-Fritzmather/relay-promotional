@@ -13,28 +13,34 @@ const config: Config = {
       },
       colors: {
         relay: {
-          bg: "#ECEAE3",
-          surface: "#F5F2EA",
-          elevated: "#FDFBF7",
-          cream: "#1A1815",
-          accent: "#3A5F82",
-          "accent-hover": "#4A6F92",
-          rose: "#7A4858",
+          cream: "#FAF8F2",
+          "cream-2": "#F3EFE4",
+          ink: "#1C1917",
+          "ink-2": "#4A4540",
+          "ink-3": "#8C857A",
+          // oklch colors — defined as CSS vars for opacity support
+          coral: "var(--coral)",
+          teal: "var(--teal)",
+          gold: "var(--gold)",
         },
       },
       fontFamily: {
-        serif: ["var(--font-instrument-serif)", "Georgia", "serif"],
-        mono: ["var(--font-dm-mono)", "ui-monospace", "monospace"],
-        geist: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        serif: ["var(--font-cormorant)", "Georgia", "serif"],
+        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
       },
       keyframes: {
         fadeUp: {
-          from: { opacity: "0", transform: "translateY(12px)" },
+          from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
+        },
+        scrollPulse: {
+          "0%, 100%": { opacity: "0.4", transform: "scaleY(1)" },
+          "50%": { opacity: "1", transform: "scaleY(1.15)" },
         },
       },
       animation: {
-        "fade-up": "fadeUp 0.65s ease forwards",
+        "fade-up": "fadeUp 0.8s ease forwards",
+        "scroll-pulse": "scrollPulse 2s 1.5s ease infinite",
       },
     },
   },
