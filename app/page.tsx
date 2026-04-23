@@ -1,6 +1,39 @@
 "use client";
 
+import confetti from "canvas-confetti";
 import { useEffect, useState } from "react";
+
+/** Brand-adjacent bursts from both bottom corners after waitlist signup (`canvas-confetti`). */
+function fireWaitlistConfetti() {
+	const colors = [
+		"#ff5a3c",
+		"#22d3ee",
+		"#fde047",
+		"#fffef5",
+		"#c4f464",
+		"#ff7eb9",
+	];
+	const burst = {
+		particleCount: 175,
+		spread: 78,
+		startVelocity: 48,
+		gravity: 0.88,
+		ticks: 260,
+		colors,
+		disableForReducedMotion: true,
+		zIndex: 9999,
+	};
+	void confetti({
+		...burst,
+		origin: { x: 0.02, y: 0.98 },
+		angle: 58,
+	});
+	void confetti({
+		...burst,
+		origin: { x: 0.98, y: 0.98 },
+		angle: 122,
+	});
+}
 
 function useScrollReveal() {
 	useEffect(() => {
@@ -46,6 +79,7 @@ function WaitlistForm({
 		} catch {
 			// best-effort — still show success
 		}
+		void fireWaitlistConfetti();
 		setSubmitted(true);
 		setLoading(false);
 	}
@@ -54,17 +88,17 @@ function WaitlistForm({
 		return (
 			<div
 				className="flex items-center gap-2.5 font-medium"
-				style={{ color: "var(--teal)" }}
+				style={{ color: "var(--coral)" }}
 			>
 				<div
 					className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px]"
 					style={{
-						background: "color-mix(in srgb, var(--teal) 15%, transparent)",
+						background: "color-mix(in srgb, var(--coral) 15%, transparent)",
 					}}
 				>
 					✓
 				</div>
-				You&apos;re on the list — we&apos;ll be in touch.
+				{"Glad to see you're interested! We'll be in touch soon enough."}
 			</div>
 		);
 	}
@@ -73,8 +107,12 @@ function WaitlistForm({
 		return (
 			<div className="relative z-10">
 				<form onSubmit={handleSubmit}>
+					{/* On small screens, separate the button from the text field */}
 					<div
-						className="flex overflow-hidden rounded-full bg-white"
+						className="
+							flex flex-col sm:flex-row
+							overflow-hidden rounded-full bg-white
+						"
 						style={{
 							border: "1.5px solid var(--coral)",
 							boxShadow:
@@ -87,12 +125,22 @@ function WaitlistForm({
 							required
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							className="min-w-[260px] flex-1 bg-transparent px-6 py-3.5 font-sans text-[0.95rem] text-relay-ink outline-none placeholder:text-relay-ink-3"
+							className="
+								min-w-[260px] flex-1 bg-transparent px-6 py-3.5 font-sans text-[0.95rem]
+								text-relay-ink outline-none placeholder:text-relay-ink-3
+								border-none sm:border-b-0 sm:border-r-0
+								sm:rounded-full rounded-full
+							"
 						/>
+						{/* Show button inline on sm+ screens only */}
 						<button
 							type="submit"
 							disabled={loading}
-							className="m-1 rounded-full px-6 py-3 font-sans text-[0.9rem] font-medium text-white transition-all disabled:opacity-70"
+							className="
+								hidden sm:inline-block m-1 rounded-full px-6 py-3 font-sans text-[0.9rem] font-medium text-white
+								transition-all disabled:opacity-70
+								w-auto
+							"
 							style={{ background: "var(--coral)" }}
 							onMouseEnter={(e) =>
 								((e.target as HTMLElement).style.background =
@@ -105,6 +153,26 @@ function WaitlistForm({
 							{loading ? "Joining…" : buttonLabel}
 						</button>
 					</div>
+					{/* Button as its own row on small screens only */}
+					<button
+						type="submit"
+						disabled={loading}
+						className="
+							mt-2 sm:hidden w-full rounded-full px-6 py-3 font-sans text-[0.9rem] font-medium text-white
+							transition-all disabled:opacity-70
+							block
+						"
+						style={{ background: "var(--coral)" }}
+						onMouseEnter={(e) =>
+							((e.target as HTMLElement).style.background =
+								"oklch(54% 0.195 30)")
+						}
+						onMouseLeave={(e) =>
+							((e.target as HTMLElement).style.background = "var(--coral)")
+						}
+					>
+						{loading ? "Joining…" : buttonLabel}
+					</button>
 				</form>
 				{noteText && (
 					<p className="mt-4 text-[0.78rem] text-relay-ink-3">{noteText}</p>
@@ -113,41 +181,53 @@ function WaitlistForm({
 		);
 	}
 
+	// Responsive layout for main form: stack vertically on small screens
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className="mx-auto flex w-full max-w-[480px] gap-2.5"
-		>
-			<input
-				type="email"
-				placeholder="your@firm.com"
-				required
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
-				className="flex-1 rounded-[6px] bg-white px-5 py-3.5 font-sans text-[0.95rem] text-relay-ink outline-none transition-colors placeholder:text-relay-ink-3"
-				style={{
-					border: "1.5px solid color-mix(in srgb, var(--ink) 18%, transparent)",
-				}}
-				onFocus={(e) => (e.target.style.borderColor = "var(--coral)")}
-				onBlur={(e) =>
-					(e.target.style.borderColor =
-						"color-mix(in srgb, var(--ink) 18%, transparent)")
-				}
-			/>
-			<button
-				type="submit"
-				disabled={loading}
-				className="whitespace-nowrap rounded-[6px] px-7 py-3.5 font-sans text-[0.95rem] font-medium text-white transition-all disabled:opacity-70"
-				style={{ background: "var(--coral)" }}
-				onMouseEnter={(e) =>
-					((e.target as HTMLElement).style.background = "oklch(54% 0.195 30)")
-				}
-				onMouseLeave={(e) =>
-					((e.target as HTMLElement).style.background = "var(--coral)")
-				}
-			>
-				{loading ? "Joining…" : buttonLabel}
-			</button>
+		<form onSubmit={handleSubmit} className="mx-auto w-full max-w-[480px]">
+			<div className="flex flex-col sm:flex-row gap-2.5">
+				<input
+					type="email"
+					placeholder="your@firm.com"
+					required
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					className="
+						flex-1 rounded-[6px] bg-white px-5 py-3.5 font-sans text-[0.95rem]
+						text-relay-ink outline-none transition-colors placeholder:text-relay-ink-3
+						border-[1.5px]
+						border-solid
+						border-[color-mix(in_srgb,var(--ink)_18%,transparent)]
+						sm:mb-0 mb-2
+					"
+					style={{
+						border:
+							"1.5px solid color-mix(in srgb, var(--ink) 18%, transparent)",
+					}}
+					onFocus={(e) => (e.target.style.borderColor = "var(--coral)")}
+					onBlur={(e) =>
+						(e.target.style.borderColor =
+							"color-mix(in srgb, var(--ink) 18%, transparent)")
+					}
+				/>
+				<button
+					type="submit"
+					disabled={loading}
+					className="
+						whitespace-nowrap rounded-[6px] px-7 py-3.5 font-sans text-[0.95rem] font-medium text-white
+						transition-all disabled:opacity-70
+						w-full sm:w-auto
+					"
+					style={{ background: "var(--coral)" }}
+					onMouseEnter={(e) =>
+						((e.target as HTMLElement).style.background = "oklch(54% 0.195 30)")
+					}
+					onMouseLeave={(e) =>
+						((e.target as HTMLElement).style.background = "var(--coral)")
+					}
+				>
+					{loading ? "Joining…" : buttonLabel}
+				</button>
+			</div>
 		</form>
 	);
 }
@@ -280,7 +360,7 @@ export default function Home() {
 			{/* ── HERO ── */}
 			<section className="hero-bg relative flex min-h-screen flex-col items-center justify-center px-12 pb-20 pt-[120px] text-center">
 				<h1
-					className="relative z-10 font-serif font-medium leading-[1.1] tracking-[-0.02em] opacity-0"
+					className="relative z-10 font-serif font-medium leading-[1.1] tracking-[-0.02em]"
 					style={{
 						fontSize: "clamp(2.6rem, 5.5vw, 5rem)",
 						display: "grid",
@@ -288,27 +368,56 @@ export default function Home() {
 						columnGap: "0.22em",
 						maxWidth: "820px",
 						width: "100%",
-						animation: "fadeUp 0.8s 0.25s ease forwards",
 					}}
 				>
-					<span className="block text-right">Upload</span>
+					<span
+						className="block text-right opacity-0"
+						style={{
+							animation: "fadeUp 0.8s 0.25s ease forwards",
+						}}
+					>
+						Upload
+					</span>
 					<em
-						className="block text-left font-semibold italic"
-						style={{ color: "var(--coral)" }}
+						className="block text-left font-semibold italic opacity-0"
+						style={{
+							color: "var(--coral)",
+							animation: "fadeUp 0.8s 0.25s ease forwards",
+						}}
 					>
 						Anything.
 					</em>
-					<span className="block text-right">Track</span>
+					<span
+						className="block text-right opacity-0"
+						style={{
+							animation: "fadeUp 0.9s 0.35s ease forwards",
+						}}
+					>
+						Track
+					</span>
 					<em
-						className="block text-left font-semibold italic"
-						style={{ color: "var(--coral)" }}
+						className="block text-left font-semibold italic opacity-0"
+						style={{
+							color: "var(--coral)",
+							animation: "fadeUp 0.9s 0.35s ease forwards",
+						}}
 					>
 						Everything.
 					</em>
-					<span className="block text-right">Share</span>
+					<span
+						className="block text-right opacity-0"
+						style={{
+							animation: "fadeUp 1s 0.45s ease forwards",
+						}}
+					>
+						Share
+					</span>
 					<em
-						className="block text-left font-semibold italic"
-						style={{ color: "var(--coral)" }}
+						className="block text-left font-semibold italic opacity-0"
+						style={{
+							color: "var(--coral)",
+							animation: "fadeUp 1s 0.45s ease forwards",
+						}}
 					>
 						Nothing.
 					</em>
@@ -336,7 +445,7 @@ export default function Home() {
 					/>
 				</div>
 
-				<div
+				{/* <div
 					className="absolute bottom-9 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5 opacity-0"
 					style={{ animation: "fadeUp 0.8s 1.1s ease forwards" }}
 				>
@@ -348,7 +457,7 @@ export default function Home() {
 							animation: "scrollPulse 2s 1.5s ease infinite",
 						}}
 					/>
-				</div>
+				</div> */}
 			</section>
 
 			<div
@@ -731,8 +840,8 @@ export default function Home() {
 					Be first in line.
 				</h2>
 				<p className="reveal mx-auto mb-12 max-w-[400px] text-[1.05rem] font-light leading-relaxed text-relay-ink-2">
-					We&apos;re rolling out to a small group of attorneys and support staff. Join the
-					waitlist and lock in early access pricing.
+					We&apos;re rolling out to a small group of attorneys and support
+					staff. Join the waitlist and lock in early access pricing.
 				</p>
 				<div className="reveal flex justify-center">
 					<WaitlistForm buttonLabel="Request Access" />
