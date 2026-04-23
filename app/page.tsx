@@ -2,6 +2,7 @@
 
 import confetti from "canvas-confetti";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 /** Brand-adjacent bursts from both bottom corners after waitlist signup (`canvas-confetti`). */
 function fireWaitlistConfetti() {
@@ -105,7 +106,7 @@ function WaitlistForm({
 
 	if (pill) {
 		return (
-			<div className="relative z-10">
+			<div className="relative z-10 w-full px-4 sm:px-0" style={{ maxWidth: "clamp(300px, 50vw, 560px)" }}>
 				<form onSubmit={handleSubmit}>
 					{/* On small screens, separate the button from the text field */}
 					<div
@@ -116,7 +117,7 @@ function WaitlistForm({
 						style={{
 							border: "1.5px solid var(--coral)",
 							boxShadow:
-								"0 4px 24px color-mix(in srgb, var(--coral) 15%, transparent)",
+								"0 4px 32px color-mix(in srgb, var(--coral) 18%, transparent)",
 						}}
 					>
 						<input
@@ -125,12 +126,7 @@ function WaitlistForm({
 							required
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							className="
-								min-w-[260px] flex-1 bg-transparent px-6 py-3.5 font-sans text-[0.95rem]
-								text-relay-ink outline-none placeholder:text-relay-ink-3
-								border-none sm:border-b-0 sm:border-r-0
-								sm:rounded-full rounded-full
-							"
+							className="min-w-0 flex-1 bg-transparent px-5 py-3.5 font-sans text-[clamp(0.85rem,1.2vw,1rem)] text-relay-ink outline-none placeholder:text-relay-ink-3"
 						/>
 						{/* Show button inline on sm+ screens only */}
 						<button
@@ -175,7 +171,7 @@ function WaitlistForm({
 					</button>
 				</form>
 				{noteText && (
-					<p className="mt-4 text-[0.78rem] text-relay-ink-3">{noteText}</p>
+					<p className="mt-4 text-[0.78rem] text-relay-ink-3 text-center">{noteText}</p>
 				)}
 			</div>
 		);
@@ -306,7 +302,7 @@ export default function Home() {
 		<>
 			{/* ── NAV ── */}
 			<nav
-				className="fixed left-0 right-0 top-0 z-[100] flex h-16 items-center justify-between px-12"
+				className="fixed left-0 right-0 top-0 z-[100] flex h-16 items-center justify-between px-6 sm:px-12"
 				style={{
 					background: "color-mix(in srgb, var(--cream) 88%, transparent)",
 					backdropFilter: "blur(12px)",
@@ -314,28 +310,31 @@ export default function Home() {
 						"1px solid color-mix(in srgb, var(--ink) 8%, transparent)",
 				}}
 			>
-				<a
-					href="#"
-					className="font-serif text-2xl font-bold tracking-[-0.01em] text-relay-ink no-underline"
-				>
-					Relay
+				<a href="#" className="no-underline flex items-center">
+					<Image
+						src="/relay-logos/black_relay.svg"
+						alt="Relay"
+						width={110}
+						height={28}
+						priority
+					/>
 				</a>
-				<div className="flex items-center gap-8">
+				<div className="flex items-center gap-4 sm:gap-8">
 					<a
 						href="#features"
-						className="text-sm text-relay-ink-2 transition-colors hover:text-relay-ink"
+						className="hidden sm:block text-sm text-relay-ink-2 transition-colors hover:text-relay-ink"
 					>
 						Features
 					</a>
 					<a
 						href="#pricing"
-						className="text-sm text-relay-ink-2 transition-colors hover:text-relay-ink"
+						className="hidden sm:block text-sm text-relay-ink-2 transition-colors hover:text-relay-ink"
 					>
 						Pricing
 					</a>
 					<a
 						href="#waitlist"
-						className="rounded-[6px] px-5 py-1.5 text-sm font-medium transition-all no-underline"
+						className="rounded-[6px] px-4 sm:px-5 py-1.5 text-sm font-medium transition-all no-underline"
 						style={{
 							border: "1.5px solid var(--coral)",
 							color: "var(--coral)",
@@ -358,15 +357,12 @@ export default function Home() {
 			</nav>
 
 			{/* ── HERO ── */}
-			<section className="hero-bg relative flex min-h-screen flex-col items-center justify-center px-12 pb-20 pt-[120px] text-center">
+			<section className="hero-bg relative overflow-hidden flex min-h-screen flex-col items-center justify-center px-6 pb-12 pt-[100px] sm:px-12 sm:pb-20 sm:pt-[120px] text-center">
 				<h1
 					className="relative z-10 font-serif font-medium leading-[1.1] tracking-[-0.02em]"
 					style={{
-						fontSize: "clamp(2.6rem, 5.5vw, 5rem)",
-						display: "grid",
-						gridTemplateColumns: "1fr 1fr",
-						columnGap: "0.22em",
-						maxWidth: "820px",
+						fontSize: "clamp(2.6rem, 5.5vw, 6rem)",
+						maxWidth: "920px",
 						width: "100%",
 					}}
 				>
@@ -424,9 +420,9 @@ export default function Home() {
 				</h1>
 
 				<p
-					className="relative z-10 mt-7 max-w-[520px] font-light leading-[1.7] text-relay-ink-2 opacity-0"
+					className="relative z-10 mt-7 max-w-[560px] font-light leading-[1.7] text-relay-ink-2 opacity-0"
 					style={{
-						fontSize: "1.1rem",
+						fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
 						animation: "fadeUp 0.8s 0.4s ease forwards",
 					}}
 				>
@@ -468,7 +464,7 @@ export default function Home() {
 			/>
 
 			{/* ── MISSION ── */}
-			<section className="mx-auto grid max-w-[1200px] grid-cols-2 items-center gap-20 px-12 py-[120px]">
+			<section className="mx-auto grid max-w-[1200px] grid-cols-1 sm:grid-cols-2 items-center gap-10 sm:gap-20 px-6 sm:px-12 py-16 sm:py-[120px]">
 				<div className="reveal">
 					<p
 						className="mb-5 text-[0.75rem] font-medium uppercase tracking-[0.12em]"
@@ -478,7 +474,7 @@ export default function Home() {
 					</p>
 					<h2
 						className="font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-						style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)" }}
+						style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
 					>
 						<strong
 							className="font-semibold not-italic"
@@ -492,7 +488,7 @@ export default function Home() {
 					</h2>
 				</div>
 				<div className="reveal space-y-5">
-					<p className="text-[1.05rem] font-light leading-[1.8] text-relay-ink-2">
+					<p className="text-[1.1rem] font-light leading-[1.8] text-relay-ink-2">
 						Every document you upload, every research query you run, every hour
 						you log — it all{" "}
 						<mark
@@ -506,7 +502,7 @@ export default function Home() {
 						</mark>
 						. Relay runs entirely on your local machine.
 					</p>
-					<p className="text-[1.05rem] font-light leading-[1.8] text-relay-ink-2">
+					<p className="text-[1.1rem] font-light leading-[1.8] text-relay-ink-2">
 						We built Relay with one constraint that can never be negotiated:{" "}
 						<mark
 							className="rounded-sm px-1 py-0.5"
@@ -520,7 +516,7 @@ export default function Home() {
 						. No data ever reaches our servers. No third-party models are
 						trained on your briefs. No cloud logs exist to subpoena.
 					</p>
-					<p className="text-[1.05rem] font-light leading-[1.8] text-relay-ink-2">
+					<p className="text-[1.1rem] font-light leading-[1.8] text-relay-ink-2">
 						Just a faster, smarter practice — on your terms.
 					</p>
 				</div>
@@ -535,15 +531,15 @@ export default function Home() {
 
 			{/* ── FEATURES ── */}
 			<section
-				className="py-[120px]"
+				className="py-16 sm:py-[120px]"
 				id="features"
 				style={{ background: "#F3EFE4" }}
 			>
-				<div className="mx-auto max-w-[1200px] px-12">
-					<div className="reveal mb-14 flex items-end justify-between">
+				<div className="mx-auto max-w-[1200px] px-6 sm:px-12">
+					<div className="reveal mb-10 sm:mb-14 flex flex-col sm:flex-row items-start sm:items-end gap-6 sm:gap-0 justify-between">
 						<h2
 							className="max-w-[480px] font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-							style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)" }}
+							style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
 						>
 							Everything your practice
 							<br />
@@ -559,11 +555,11 @@ export default function Home() {
 						</p>
 					</div>
 
-					<div className="grid grid-cols-2 gap-6">
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 						{features.map((f) => (
 							<div
 								key={f.num}
-								className="reveal group relative overflow-hidden rounded-[14px] bg-relay-cream p-10 transition-all duration-300"
+								className="reveal group relative overflow-hidden rounded-[14px] bg-relay-cream p-6 sm:p-10 transition-all duration-300"
 								style={{
 									border:
 										"1.5px solid color-mix(in srgb, var(--ink) 10%, transparent)",
@@ -595,10 +591,10 @@ export default function Home() {
 									className="mb-8 h-[3px] w-10 rounded-full"
 									style={{ background: f.accent }}
 								/>
-								<h3 className="mb-3.5 font-serif text-[1.65rem] font-medium leading-[1.2] text-relay-ink">
+								<h3 className="mb-3.5 font-serif text-[1.85rem] font-medium leading-[1.2] text-relay-ink">
 									{f.title}
 								</h3>
-								<p className="text-[0.9rem] font-light leading-[1.8] text-relay-ink-2">
+								<p className="text-[1rem] font-light leading-[1.8] text-relay-ink-2">
 									{f.body}
 								</p>
 								<span
@@ -614,7 +610,7 @@ export default function Home() {
 			</section>
 
 			{/* ── PRIVACY ── */}
-			<section className="mx-auto max-w-[1200px] px-12 py-[120px] text-center">
+			<section className="mx-auto max-w-[1200px] px-6 sm:px-12 py-16 sm:py-[120px] text-center">
 				<p
 					className="reveal mb-5 text-[0.75rem] font-medium uppercase tracking-[0.12em]"
 					style={{ color: "var(--coral)" }}
@@ -623,7 +619,7 @@ export default function Home() {
 				</p>
 				<h2
 					className="reveal mx-auto mb-5 max-w-[600px] font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-					style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)" }}
+					style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
 				>
 					Your clients trust you.
 					<br />
@@ -633,11 +629,11 @@ export default function Home() {
 					Relay&apos;s architecture is built from the ground up to keep
 					everything in your office.
 				</p>
-				<div className="reveal grid grid-cols-3 gap-7">
+				<div className="reveal grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-7">
 					{privacyPillars.map((p) => (
 						<div
 							key={p.title}
-							className="rounded-[14px] bg-relay-cream p-10 text-left transition-all duration-300"
+							className="rounded-[14px] bg-relay-cream p-6 sm:p-10 text-left transition-all duration-300"
 							style={{
 								border:
 									"1.5px solid color-mix(in srgb, var(--ink) 10%, transparent)",
@@ -657,14 +653,14 @@ export default function Home() {
 								el.style.boxShadow = "none";
 							}}
 						>
-							<h3 className="mb-5 font-serif text-[1.65rem] font-medium leading-[1.2] text-relay-ink">
+							<h3 className="mb-5 font-serif text-[1.85rem] font-medium leading-[1.2] text-relay-ink">
 								{p.title}
 							</h3>
 							<div
 								className="mb-5 h-[3px] w-10 rounded-full"
 								style={{ background: p.accent }}
 							/>
-							<p className="text-[0.9rem] font-light leading-[1.8] text-relay-ink-2">
+							<p className="text-[1rem] font-light leading-[1.8] text-relay-ink-2">
 								{p.body}
 							</p>
 						</div>
@@ -681,7 +677,7 @@ export default function Home() {
 
 			{/* ── PRICING ── */}
 			<section
-				className="px-12 py-[120px]"
+				className="px-6 sm:px-12 py-16 sm:py-[120px]"
 				id="pricing"
 				style={{ background: "#F3EFE4" }}
 			>
@@ -689,7 +685,7 @@ export default function Home() {
 					<div className="reveal mb-[60px] text-center">
 						<h2
 							className="mb-4 font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-							style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)" }}
+							style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
 						>
 							Simple, honest pricing.
 						</h2>
@@ -700,10 +696,9 @@ export default function Home() {
 
 					<div className="reveal mx-auto max-w-[860px]">
 						<div
-							className="grid items-start gap-12 rounded-2xl bg-relay-cream"
+							className="flex flex-col sm:grid items-start gap-8 sm:gap-12 rounded-2xl bg-relay-cream p-8 sm:p-[52px_56px]"
 							style={{
 								gridTemplateColumns: "1fr auto 1fr",
-								padding: "52px 56px",
 								border: "1.5px solid var(--coral)",
 							}}
 						>
@@ -776,7 +771,7 @@ export default function Home() {
 
 							{/* Divider */}
 							<div
-								className="self-stretch"
+								className="hidden sm:block self-stretch"
 								style={{
 									width: "1px",
 									background: "color-mix(in srgb, var(--ink) 10%, transparent)",
@@ -824,7 +819,7 @@ export default function Home() {
 
 			{/* ── BOTTOM CTA ── */}
 			<section
-				className="bottom-cta-bg relative overflow-hidden px-12 py-[140px] text-center"
+				className="bottom-cta-bg relative overflow-hidden px-6 py-20 sm:px-12 sm:py-[140px] text-center"
 				id="waitlist"
 			>
 				<p
@@ -835,7 +830,7 @@ export default function Home() {
 				</p>
 				<h2
 					className="reveal mx-auto mb-4 max-w-[560px] font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-					style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)" }}
+					style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
 				>
 					Be first in line.
 				</h2>
@@ -850,14 +845,19 @@ export default function Home() {
 
 			{/* ── FOOTER ── */}
 			<footer
-				className="flex items-center justify-between px-12 py-10"
+				className="flex flex-col sm:flex-row items-center gap-4 sm:gap-0 justify-between px-6 sm:px-12 py-8 sm:py-10 text-center sm:text-left"
 				style={{
 					borderTop:
 						"1px solid color-mix(in srgb, var(--ink) 10%, transparent)",
 				}}
 			>
-				<div className="font-serif text-xl font-medium text-relay-ink">
-					Relay
+				<div className="flex items-center">
+					<Image
+						src="/relay-logos/black_relay.svg"
+						alt="Relay"
+						width={90}
+						height={22}
+					/>
 				</div>
 				<p className="text-[0.8rem] text-relay-ink-3">
 					© 2026 Relay Legal Technologies, Inc.
