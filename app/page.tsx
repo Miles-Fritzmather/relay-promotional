@@ -1,8 +1,8 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 /** Brand-adjacent bursts from both bottom corners after waitlist signup (`canvas-confetti`). */
 function fireWaitlistConfetti() {
@@ -106,14 +106,13 @@ function WaitlistForm({
 
 	if (pill) {
 		return (
-			<div className="relative z-10 w-full px-4 sm:px-0" style={{ maxWidth: "clamp(300px, 50vw, 560px)" }}>
+			<div
+				className="relative z-10 w-full px-4 sm:px-0"
+				style={{ maxWidth: "clamp(300px, 50vw, 560px)" }}
+			>
 				<form onSubmit={handleSubmit}>
-					{/* On small screens, separate the button from the text field */}
 					<div
-						className="
-							flex flex-col sm:flex-row
-							overflow-hidden rounded-full bg-white
-						"
+						className="flex overflow-hidden rounded-full bg-white"
 						style={{
 							border: "1.5px solid var(--coral)",
 							boxShadow:
@@ -128,15 +127,10 @@ function WaitlistForm({
 							onChange={(e) => setEmail(e.target.value)}
 							className="min-w-0 flex-1 bg-transparent px-5 py-3.5 font-sans text-[clamp(0.85rem,1.2vw,1rem)] text-relay-ink outline-none placeholder:text-relay-ink-3"
 						/>
-						{/* Show button inline on sm+ screens only */}
 						<button
 							type="submit"
 							disabled={loading}
-							className="
-								hidden sm:inline-block m-1 rounded-full px-6 py-3 font-sans text-[0.9rem] font-medium text-white
-								transition-all disabled:opacity-70
-								w-auto
-							"
+							className="m-1 shrink-0 rounded-full px-5 py-2.5 font-sans text-[clamp(0.8rem,1.1vw,0.95rem)] font-medium text-white transition-all disabled:opacity-70 lg:px-8 xl:px-10"
 							style={{ background: "var(--coral)" }}
 							onMouseEnter={(e) =>
 								((e.target as HTMLElement).style.background =
@@ -149,29 +143,11 @@ function WaitlistForm({
 							{loading ? "Joining…" : buttonLabel}
 						</button>
 					</div>
-					{/* Button as its own row on small screens only */}
-					<button
-						type="submit"
-						disabled={loading}
-						className="
-							mt-2 sm:hidden w-full rounded-full px-6 py-3 font-sans text-[0.9rem] font-medium text-white
-							transition-all disabled:opacity-70
-							block
-						"
-						style={{ background: "var(--coral)" }}
-						onMouseEnter={(e) =>
-							((e.target as HTMLElement).style.background =
-								"oklch(54% 0.195 30)")
-						}
-						onMouseLeave={(e) =>
-							((e.target as HTMLElement).style.background = "var(--coral)")
-						}
-					>
-						{loading ? "Joining…" : buttonLabel}
-					</button>
 				</form>
 				{noteText && (
-					<p className="mt-4 text-[0.78rem] text-relay-ink-3 text-center">{noteText}</p>
+					<p className="mt-4 text-[0.78rem] text-relay-ink-3 text-center">
+						{noteText}
+					</p>
 				)}
 			</div>
 		);
@@ -359,66 +335,66 @@ export default function Home() {
 			{/* ── HERO ── */}
 			<section className="hero-bg relative overflow-hidden flex min-h-screen flex-col items-center justify-center px-6 pb-12 pt-[100px] sm:px-12 sm:pb-20 sm:pt-[120px] text-center">
 				<h1
-					className="relative z-10 font-serif font-medium leading-[1.1] tracking-[-0.02em]"
+					className="hero-heading relative z-10 mx-auto w-full max-w-[920px] font-serif font-medium leading-[1.1] tracking-[-0.02em]"
 					style={{
 						fontSize: "clamp(2.6rem, 5.5vw, 6rem)",
-						maxWidth: "920px",
-						width: "100%",
 					}}
 				>
-					<span
-						className="block text-right opacity-0"
-						style={{
-							animation: "fadeUp 0.8s 0.25s ease forwards",
-						}}
-					>
-						Upload
+					<span className="hero-heading-row">
+						<span
+							className="hero-h-first block opacity-0"
+							style={{ animation: "fadeUp 0.8s 0.25s ease forwards" }}
+						>
+							Upload
+						</span>
+						<span className="hero-h-mid" aria-hidden="true" />
+						<em
+							className="hero-h-second block font-semibold italic opacity-0"
+							style={{
+								color: "var(--coral)",
+								animation: "fadeUp 0.8s 0.25s ease forwards",
+							}}
+						>
+							Anything.
+						</em>
 					</span>
-					<em
-						className="block text-left font-semibold italic opacity-0"
-						style={{
-							color: "var(--coral)",
-							animation: "fadeUp 0.8s 0.25s ease forwards",
-						}}
-					>
-						Anything.
-					</em>
-					<span
-						className="block text-right opacity-0"
-						style={{
-							animation: "fadeUp 0.9s 0.35s ease forwards",
-						}}
-					>
-						Track
+					<span className="hero-heading-row">
+						<span
+							className="hero-h-first block opacity-0"
+							style={{ animation: "fadeUp 0.9s 0.35s ease forwards" }}
+						>
+							Track
+						</span>
+						<span className="hero-h-mid" aria-hidden="true" />
+						<em
+							className="hero-h-second block font-semibold italic opacity-0"
+							style={{
+								color: "var(--coral)",
+								animation: "fadeUp 0.9s 0.35s ease forwards",
+							}}
+						>
+							Everything.
+						</em>
 					</span>
-					<em
-						className="block text-left font-semibold italic opacity-0"
-						style={{
-							color: "var(--coral)",
-							animation: "fadeUp 0.9s 0.35s ease forwards",
-						}}
-					>
-						Everything.
-					</em>
-					<span
-						className="block text-right opacity-0"
-						style={{
-							animation: "fadeUp 1s 0.45s ease forwards",
-						}}
-					>
-						Share
+					<span className="hero-heading-row">
+						<span
+							className="hero-h-first block opacity-0"
+							style={{ animation: "fadeUp 1s 0.45s ease forwards" }}
+						>
+							Share
+						</span>
+						<span className="hero-h-mid" aria-hidden="true" />
+						<em
+							className="hero-h-second block font-semibold italic opacity-0"
+							style={{
+								color: "var(--coral)",
+								animation: "fadeUp 1s 0.45s ease forwards",
+							}}
+						>
+							Nothing.
+						</em>
 					</span>
-					<em
-						className="block text-left font-semibold italic opacity-0"
-						style={{
-							color: "var(--coral)",
-							animation: "fadeUp 1s 0.45s ease forwards",
-						}}
-					>
-						Nothing.
-					</em>
 				</h1>
-
 				<p
 					className="relative z-10 mt-7 max-w-[560px] font-light leading-[1.7] text-relay-ink-2 opacity-0"
 					style={{
@@ -440,20 +416,6 @@ export default function Home() {
 						noteText="No commitment. Early access pricing guaranteed."
 					/>
 				</div>
-
-				{/* <div
-					className="absolute bottom-9 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5 opacity-0"
-					style={{ animation: "fadeUp 0.8s 1.1s ease forwards" }}
-				>
-					<div
-						className="h-10 w-px"
-						style={{
-							background:
-								"linear-gradient(to bottom, var(--ink-3), transparent)",
-							animation: "scrollPulse 2s 1.5s ease infinite",
-						}}
-					/>
-				</div> */}
 			</section>
 
 			<div
