@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import Redis from "ioredis";
 
-/**
- * Waitlist API — stores emails in Upstash Redis (Vercel Marketplace).
- *
- * Setup (one-time, if not already done):
- *   1. Vercel dashboard → Integrations → Browse Marketplace → search "Upstash Redis"
- *   2. Install and create a Redis database, then connect it to this project.
- *   3. Vercel will auto-inject UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
- *   4. Run `vercel env pull .env.local` to get the vars locally.
- *
- * Read stored emails:
- *   From Upstash console, or via: redis.lrange("relay:waitlist", 0, -1)
- */
+// Singleton — reused across warm invocations of the same serverless instance
+let redis: Redis | null = null;
+
+function getRedis(): Redis {
+  if (!redis) {
+    redis = new Redis(process.env.RELAY_REDIS_URL!, {
+      maxRetriesPerRequest: 2,
+      connectTimeout: 5000,
+      lazyConnect: true,
+    });
+    redis.on("error", (err) => console.error("[waitlist] Redis error:", err));
+  }
+  return redis;
+}
+
 export async function POST(request: NextRequest) {
   let email: string;
 
@@ -28,22 +32,16 @@ export async function POST(request: NextRequest) {
 
   const entry = JSON.stringify({ email, joinedAt: new Date().toISOString() });
 
-  if (
-    process.env.UPSTASH_REDIS_REST_URL &&
-    process.env.UPSTASH_REDIS_REST_TOKEN
-  ) {
+  if (process.env.RELAY_REDIS_URL) {
     try {
-      const { Redis } = await import("@upstash/redis");
-      const redis = new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL,
-        token: process.env.UPSTASH_REDIS_REST_TOKEN,
-      });
-      await redis.lpush("relay:waitlist", entry);
+      const client = getRedis();
+      const len = await client.lpush("relay:waitlist", entry);
+      console.log(`[waitlist] Stored ${email} — list length: ${len}`);
     } catch (err) {
       console.error("[waitlist] Redis write failed:", err);
     }
   } else {
-    console.log("[waitlist] No Redis configured. New signup:", entry);
+    console.warn("[waitlist] RELAY_REDIS_URL not set — skipping Redis write. Signup:", email);
   }
 
   return NextResponse.json({ success: true });
