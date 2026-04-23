@@ -1,7 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import confetti from "canvas-confetti";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+
+/** Brand-adjacent bursts from both bottom corners after waitlist signup (`canvas-confetti`). */
+function fireWaitlistConfetti() {
+	const colors = [
+		"#ff5a3c",
+		"#22d3ee",
+		"#fde047",
+		"#fffef5",
+		"#c4f464",
+		"#ff7eb9",
+	];
+	const burst = {
+		particleCount: 175,
+		spread: 78,
+		startVelocity: 48,
+		gravity: 0.88,
+		ticks: 260,
+		colors,
+		disableForReducedMotion: true,
+		zIndex: 9999,
+	};
+	void confetti({
+		...burst,
+		origin: { x: 0.02, y: 0.98 },
+		angle: 58,
+	});
+	void confetti({
+		...burst,
+		origin: { x: 0.98, y: 0.98 },
+		angle: 122,
+	});
+}
 
 function useScrollReveal() {
 	useEffect(() => {
@@ -47,6 +80,7 @@ function WaitlistForm({
 		} catch {
 			// best-effort — still show success
 		}
+		void fireWaitlistConfetti();
 		setSubmitted(true);
 		setLoading(false);
 	}
@@ -55,24 +89,27 @@ function WaitlistForm({
 		return (
 			<div
 				className="flex items-center gap-2.5 font-medium"
-				style={{ color: "var(--teal)" }}
+				style={{ color: "var(--coral)" }}
 			>
 				<div
 					className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px]"
 					style={{
-						background: "color-mix(in srgb, var(--teal) 15%, transparent)",
+						background: "color-mix(in srgb, var(--coral) 15%, transparent)",
 					}}
 				>
 					✓
 				</div>
-				You&apos;re on the list — we&apos;ll be in touch.
+				{"Glad to see you're interested! We'll be in touch soon enough."}
 			</div>
 		);
 	}
 
 	if (pill) {
 		return (
-			<div className="relative z-10 w-full px-4 sm:px-0" style={{ maxWidth: "clamp(300px, 50vw, 560px)" }}>
+			<div
+				className="relative z-10 w-full px-4 sm:px-0"
+				style={{ maxWidth: "clamp(300px, 50vw, 560px)" }}
+			>
 				<form onSubmit={handleSubmit}>
 					<div
 						className="flex overflow-hidden rounded-full bg-white"
@@ -93,7 +130,7 @@ function WaitlistForm({
 						<button
 							type="submit"
 							disabled={loading}
-							className="m-1 shrink-0 rounded-full px-5 lg:px-8 xl:px-10 py-2.5 font-sans text-[clamp(0.8rem,1.1vw,0.95rem)] font-medium text-white transition-all disabled:opacity-70"
+							className="m-1 shrink-0 rounded-full px-5 py-2.5 font-sans text-[clamp(0.8rem,1.1vw,0.95rem)] font-medium text-white transition-all disabled:opacity-70 lg:px-8 xl:px-10"
 							style={{ background: "var(--coral)" }}
 							onMouseEnter={(e) =>
 								((e.target as HTMLElement).style.background =
@@ -108,47 +145,61 @@ function WaitlistForm({
 					</div>
 				</form>
 				{noteText && (
-					<p className="mt-4 text-[0.78rem] text-relay-ink-3 text-center">{noteText}</p>
+					<p className="mt-4 text-[0.78rem] text-relay-ink-3 text-center">
+						{noteText}
+					</p>
 				)}
 			</div>
 		);
 	}
 
+	// Responsive layout for main form: stack vertically on small screens
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className="mx-auto flex w-full max-w-[480px] flex-col sm:flex-row gap-2.5 px-4 sm:px-0"
-		>
-			<input
-				type="email"
-				placeholder="your@firm.com"
-				required
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
-				className="flex-1 min-w-0 rounded-[6px] bg-white px-5 py-3.5 font-sans text-[0.95rem] text-relay-ink outline-none transition-colors placeholder:text-relay-ink-3"
-				style={{
-					border: "1.5px solid color-mix(in srgb, var(--ink) 18%, transparent)",
-				}}
-				onFocus={(e) => (e.target.style.borderColor = "var(--coral)")}
-				onBlur={(e) =>
-					(e.target.style.borderColor =
-						"color-mix(in srgb, var(--ink) 18%, transparent)")
-				}
-			/>
-			<button
-				type="submit"
-				disabled={loading}
-				className="whitespace-nowrap rounded-[6px] px-7 py-3.5 font-sans text-[0.95rem] font-medium text-white transition-all disabled:opacity-70"
-				style={{ background: "var(--coral)" }}
-				onMouseEnter={(e) =>
-					((e.target as HTMLElement).style.background = "oklch(54% 0.195 30)")
-				}
-				onMouseLeave={(e) =>
-					((e.target as HTMLElement).style.background = "var(--coral)")
-				}
-			>
-				{loading ? "Joining…" : buttonLabel}
-			</button>
+		<form onSubmit={handleSubmit} className="mx-auto w-full max-w-[480px]">
+			<div className="flex flex-col sm:flex-row gap-2.5">
+				<input
+					type="email"
+					placeholder="your@firm.com"
+					required
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					className="
+						flex-1 rounded-[6px] bg-white px-5 py-3.5 font-sans text-[0.95rem]
+						text-relay-ink outline-none transition-colors placeholder:text-relay-ink-3
+						border-[1.5px]
+						border-solid
+						border-[color-mix(in_srgb,var(--ink)_18%,transparent)]
+						sm:mb-0 mb-2
+					"
+					style={{
+						border:
+							"1.5px solid color-mix(in srgb, var(--ink) 18%, transparent)",
+					}}
+					onFocus={(e) => (e.target.style.borderColor = "var(--coral)")}
+					onBlur={(e) =>
+						(e.target.style.borderColor =
+							"color-mix(in srgb, var(--ink) 18%, transparent)")
+					}
+				/>
+				<button
+					type="submit"
+					disabled={loading}
+					className="
+						whitespace-nowrap rounded-[6px] px-7 py-3.5 font-sans text-[0.95rem] font-medium text-white
+						transition-all disabled:opacity-70
+						w-full sm:w-auto
+					"
+					style={{ background: "var(--coral)" }}
+					onMouseEnter={(e) =>
+						((e.target as HTMLElement).style.background = "oklch(54% 0.195 30)")
+					}
+					onMouseLeave={(e) =>
+						((e.target as HTMLElement).style.background = "var(--coral)")
+					}
+				>
+					{loading ? "Joining…" : buttonLabel}
+				</button>
+			</div>
 		</form>
 	);
 }
@@ -284,28 +335,66 @@ export default function Home() {
 			{/* ── HERO ── */}
 			<section className="hero-bg relative overflow-hidden flex min-h-screen flex-col items-center justify-center px-6 pb-12 pt-[100px] sm:px-12 sm:pb-20 sm:pt-[120px] text-center">
 				<h1
-					className="relative z-10 font-serif font-medium leading-[1.1] tracking-[-0.02em] opacity-0 hero-heading"
+					className="hero-heading relative z-10 mx-auto w-full max-w-[920px] font-serif font-medium leading-[1.1] tracking-[-0.02em]"
 					style={{
 						fontSize: "clamp(2.6rem, 5.5vw, 6rem)",
-						maxWidth: "920px",
-						width: "100%",
-						animation: "fadeUp 0.8s 0.25s ease forwards",
 					}}
 				>
-					<span className="hero-pair">
-						<span className="block text-right">Upload</span>
-						<em className="block text-left font-semibold italic" style={{ color: "var(--coral)" }}>Anything.</em>
+					<span className="hero-heading-row">
+						<span
+							className="hero-h-first block opacity-0"
+							style={{ animation: "fadeUp 0.8s 0.25s ease forwards" }}
+						>
+							Upload
+						</span>
+						<span className="hero-h-mid" aria-hidden="true" />
+						<em
+							className="hero-h-second block font-semibold italic opacity-0"
+							style={{
+								color: "var(--coral)",
+								animation: "fadeUp 0.8s 0.25s ease forwards",
+							}}
+						>
+							Anything.
+						</em>
 					</span>
-					<span className="hero-pair">
-						<span className="block text-right">Track</span>
-						<em className="block text-left font-semibold italic" style={{ color: "var(--coral)" }}>Everything.</em>
+					<span className="hero-heading-row">
+						<span
+							className="hero-h-first block opacity-0"
+							style={{ animation: "fadeUp 0.9s 0.35s ease forwards" }}
+						>
+							Track
+						</span>
+						<span className="hero-h-mid" aria-hidden="true" />
+						<em
+							className="hero-h-second block font-semibold italic opacity-0"
+							style={{
+								color: "var(--coral)",
+								animation: "fadeUp 0.9s 0.35s ease forwards",
+							}}
+						>
+							Everything.
+						</em>
 					</span>
-					<span className="hero-pair">
-						<span className="block text-right">Share</span>
-						<em className="block text-left font-semibold italic" style={{ color: "var(--coral)" }}>Nothing.</em>
+					<span className="hero-heading-row">
+						<span
+							className="hero-h-first block opacity-0"
+							style={{ animation: "fadeUp 1s 0.45s ease forwards" }}
+						>
+							Share
+						</span>
+						<span className="hero-h-mid" aria-hidden="true" />
+						<em
+							className="hero-h-second block font-semibold italic opacity-0"
+							style={{
+								color: "var(--coral)",
+								animation: "fadeUp 1s 0.45s ease forwards",
+							}}
+						>
+							Nothing.
+						</em>
 					</span>
 				</h1>
-
 				<p
 					className="relative z-10 mt-7 max-w-[560px] font-light leading-[1.7] text-relay-ink-2 opacity-0"
 					style={{
@@ -325,20 +414,6 @@ export default function Home() {
 						pill
 						buttonLabel="Join the Waitlist"
 						noteText="No commitment. Early access pricing guaranteed."
-					/>
-				</div>
-
-				<div
-					className="absolute bottom-9 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5 opacity-0"
-					style={{ animation: "fadeUp 0.8s 1.1s ease forwards" }}
-				>
-					<div
-						className="h-10 w-px"
-						style={{
-							background:
-								"linear-gradient(to bottom, var(--ink-3), transparent)",
-							animation: "scrollPulse 2s 1.5s ease infinite",
-						}}
 					/>
 				</div>
 			</section>
@@ -722,8 +797,8 @@ export default function Home() {
 					Be first in line.
 				</h2>
 				<p className="reveal mx-auto mb-12 max-w-[400px] text-[1.05rem] font-light leading-relaxed text-relay-ink-2">
-					We&apos;re rolling out to a small group of attorneys and support staff. Join the
-					waitlist and lock in early access pricing.
+					We&apos;re rolling out to a small group of attorneys and support
+					staff. Join the waitlist and lock in early access pricing.
 				</p>
 				<div className="reveal flex justify-center">
 					<WaitlistForm buttonLabel="Request Access" />
