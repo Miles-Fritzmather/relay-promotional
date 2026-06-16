@@ -372,3 +372,53 @@ The whole client half lives in `relay/src/backend/app/licensing.py` + `auth.py`:
 
 So calling **activate** (on the site) creates the trialing subscription; everything after is the
 backend *pulling* that status on its 12h cycle and `require_seat` enforcing it on every request.
+
+---
+
+## Appendix — Inspecting the Redis data
+
+All app data lives in one Redis (Upstash), keyed by namespace: `relay:waitlist` (the waitlist),
+`firm:*` (firm/license records), `lease:*` (hardware leases), and the reverse indexes
+`firmKeyBySub:*` / `firmKeyByCustomer:*`. There's no key collision, so waitlist and licensing
+share the same database.
+
+**Where to run these:** either the **Upstash console → your DB → CLI tab** (a browser shell, paste
+commands directly), or your own terminal via `redis-cli` against the TLS endpoint:
+
+```bash
+# Note rediss:// (or --tls) — Upstash requires TLS. Get the URL from the Upstash "Connect" tab.
+redis-cli --tls -u rediss://default:<PASSWORD>@<your-db>.upstash.io:6379
+```
+
+### Waitlist
+```
+LLEN  relay:waitlist                 # how many signups
+LRANGE relay:waitlist 0 -1           # all signups, newest first (it's an lpush list)
+LRANGE relay:waitlist 0 9            # just the 10 newest
+LREM  relay:waitlist 0 "<exact JSON string>"   # delete a specific entry (count 0 = all matches)
+DEL   relay:waitlist                 # wipe the entire waitlist (careful)
+```
+Each entry is JSON: `{"email":"...","joinedAt":"<ISO>"}`. The route does **not** dedupe — the same
+email signing up twice creates two entries.
+
+### Licensing / firms
+```
+KEYS  firm:*                         # every firm record (key = firm:relay_live_…)
+GET   firm:relay_live_<key>          # one firm record (JSON: seats, status, stripeCustomerId, …)
+KEYS  lease:*                        # hardware-financing leases (key = lease:<subscriptionId>)
+GET   lease:<subscriptionId>         # one lease record
+GET   firmKeyBySub:<subscriptionId>  # reverse index → the firm's license key
+GET   firmKeyByCustomer:<customerId> # reverse index → the firm's license key
+```
+
+### General / housekeeping
+```
+KEYS  *                              # list every key (fine at this scale; avoid on huge DBs)
+TYPE  <key>                          # what a key holds (string, list, …)
+TTL   <key>                          # seconds to expiry (-1 = no expiry, which is our default)
+DEL   <key>                          # delete a key
+FLUSHDB                              # ⚠ delete EVERYTHING in the database — don't run in prod
+```
+
+> `KEYS *` is fine here because the dataset is small. On a large production DB prefer `SCAN` to
+> avoid blocking. Quote the exact JSON string when using `LREM`, including the braces.

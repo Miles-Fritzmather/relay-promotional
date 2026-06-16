@@ -1,25 +1,32 @@
 import type { Metadata } from "next";
-import { Onest, JetBrains_Mono } from "next/font/google";
+import { Onest, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const onest = Onest({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-onest",
+  display: "swap",
+});
+
+const interTight = Inter_Tight({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter-tight",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Relay — The AI legal assistant that never leaves your machine",
+  title: "Relay — Counsel that never leaves your machine",
   description:
-    "Relay runs entirely on your own computer — your files, your research, and your clients' confidences never leave the building.",
+    "Relay runs entirely on your own hardware — your files, your research, and your clients' confidences never leave the building. The local-first AI for the practice of law.",
 };
 
 export default function RootLayout({
@@ -28,15 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${onest.variable} ${jetbrainsMono.variable}`}>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('relay-theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`,
-          }}
-        />
-      </head>
-      <body suppressHydrationWarning>{children}</body>
+    <html
+      lang="en"
+      className={`${onest.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
+    >
+      <body>{children}</body>
     </html>
   );
 }
