@@ -1,838 +1,574 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-/** Brand-adjacent bursts from both bottom corners after waitlist signup (`canvas-confetti`). */
-function fireWaitlistConfetti() {
-	const colors = [
-		"#ff5a3c",
-		"#22d3ee",
-		"#fde047",
-		"#fffef5",
-		"#c4f464",
-		"#ff7eb9",
-	];
-	const burst = {
-		particleCount: 175,
-		spread: 78,
-		startVelocity: 48,
-		gravity: 0.88,
-		ticks: 260,
-		colors,
-		disableForReducedMotion: true,
-		zIndex: 9999,
-	};
-	void confetti({
-		...burst,
-		origin: { x: 0.02, y: 0.98 },
-		angle: 58,
-	});
-	void confetti({
-		...burst,
-		origin: { x: 0.98, y: 0.98 },
-		angle: 122,
-	});
+/* ─── Confetti ─── */
+function fireConfetti() {
+  const colors = ["#d9743f", "#e89866", "#faf7f0", "#b85a28", "#c79a4a"];
+  const common = { particleCount: 60, spread: 70, startVelocity: 55, ticks: 200, colors, scalar: 0.9 };
+  confetti({ ...common, origin: { x: 0, y: 1 }, angle: 60 });
+  confetti({ ...common, origin: { x: 1, y: 1 }, angle: 120 });
+  setTimeout(() => {
+    confetti({ ...common, particleCount: 40, origin: { x: 0, y: 1 }, angle: 60 });
+    confetti({ ...common, particleCount: 40, origin: { x: 1, y: 1 }, angle: 120 });
+  }, 180);
 }
 
+/* ─── Scroll Reveal ─── */
 function useScrollReveal() {
-	useEffect(() => {
-		const reveals = document.querySelectorAll(".reveal");
-		const obs = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry, i) => {
-					if (entry.isIntersecting) {
-						setTimeout(() => entry.target.classList.add("visible"), i * 60);
-						obs.unobserve(entry.target);
-					}
-				});
-			},
-			{ threshold: 0.12 },
-		);
-		reveals.forEach((el) => obs.observe(el));
-		return () => obs.disconnect();
-	}, []);
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
 }
 
-function WaitlistForm({
-	pill = false,
-	buttonLabel = "Request Access",
-	noteText,
-}: {
-	pill?: boolean;
-	buttonLabel?: string;
-	noteText?: string;
-}) {
-	const [email, setEmail] = useState("");
-	const [submitted, setSubmitted] = useState(false);
-	const [loading, setLoading] = useState(false);
-
-	async function handleSubmit(e: React.FormEvent) {
-		e.preventDefault();
-		setLoading(true);
-		try {
-			await fetch("/api/waitlist", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email }),
-			});
-		} catch {
-			// best-effort — still show success
-		}
-		void fireWaitlistConfetti();
-		setSubmitted(true);
-		setLoading(false);
-	}
-
-	if (submitted) {
-		return (
-			<div
-				className="flex items-center gap-2.5 font-medium"
-				style={{ color: "var(--coral)" }}
-			>
-				<div
-					className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px]"
-					style={{
-						background: "color-mix(in srgb, var(--coral) 15%, transparent)",
-					}}
-				>
-					✓
-				</div>
-				{"Glad to see you're interested! We'll be in touch soon enough."}
-			</div>
-		);
-	}
-
-	if (pill) {
-		return (
-			<div
-				className="relative z-10 w-full px-4 sm:px-0"
-				style={{ maxWidth: "clamp(300px, 50vw, 560px)" }}
-			>
-				<form onSubmit={handleSubmit}>
-					<div
-						className="flex overflow-hidden rounded-full bg-white"
-						style={{
-							border: "1.5px solid var(--coral)",
-							boxShadow:
-								"0 4px 32px color-mix(in srgb, var(--coral) 18%, transparent)",
-						}}
-					>
-						<input
-							type="email"
-							placeholder="your@firm.com"
-							required
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							className="min-w-0 flex-1 bg-transparent px-5 py-3.5 font-sans text-[clamp(0.85rem,1.2vw,1rem)] text-relay-ink outline-none placeholder:text-relay-ink-3"
-						/>
-						<button
-							type="submit"
-							disabled={loading}
-							className="m-1 shrink-0 rounded-full px-5 py-2.5 font-sans text-[clamp(0.8rem,1.1vw,0.95rem)] font-medium text-white transition-all disabled:opacity-70 lg:px-8 xl:px-10"
-							style={{ background: "var(--coral)" }}
-							onMouseEnter={(e) =>
-								((e.target as HTMLElement).style.background =
-									"oklch(54% 0.195 30)")
-							}
-							onMouseLeave={(e) =>
-								((e.target as HTMLElement).style.background = "var(--coral)")
-							}
-						>
-							{loading ? "Joining…" : buttonLabel}
-						</button>
-					</div>
-				</form>
-				{noteText && (
-					<p className="mt-4 text-[0.78rem] text-relay-ink-3 text-center">
-						{noteText}
-					</p>
-				)}
-			</div>
-		);
-	}
-
-	// Responsive layout for main form: stack vertically on small screens
-	return (
-		<form onSubmit={handleSubmit} className="mx-auto w-full max-w-[480px]">
-			<div className="flex flex-col sm:flex-row gap-2.5">
-				<input
-					type="email"
-					placeholder="your@firm.com"
-					required
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-					className="
-						flex-1 rounded-[6px] bg-white px-5 py-3.5 font-sans text-[0.95rem]
-						text-relay-ink outline-none transition-colors placeholder:text-relay-ink-3
-						border-[1.5px]
-						border-solid
-						border-[color-mix(in_srgb,var(--ink)_18%,transparent)]
-						sm:mb-0 mb-2
-					"
-					style={{
-						border:
-							"1.5px solid color-mix(in srgb, var(--ink) 18%, transparent)",
-					}}
-					onFocus={(e) => (e.target.style.borderColor = "var(--coral)")}
-					onBlur={(e) =>
-						(e.target.style.borderColor =
-							"color-mix(in srgb, var(--ink) 18%, transparent)")
-					}
-				/>
-				<button
-					type="submit"
-					disabled={loading}
-					className="
-						whitespace-nowrap rounded-[6px] px-7 py-3.5 font-sans text-[0.95rem] font-medium text-white
-						transition-all disabled:opacity-70
-						w-full sm:w-auto
-					"
-					style={{ background: "var(--coral)" }}
-					onMouseEnter={(e) =>
-						((e.target as HTMLElement).style.background = "oklch(54% 0.195 30)")
-					}
-					onMouseLeave={(e) =>
-						((e.target as HTMLElement).style.background = "var(--coral)")
-					}
-				>
-					{loading ? "Joining…" : buttonLabel}
-				</button>
-			</div>
-		</form>
-	);
+/* ─── Hero anim trigger ─── */
+function useHeroAnim() {
+  useEffect(() => {
+    const id = requestAnimationFrame(() =>
+      requestAnimationFrame(() => document.body.setAttribute("data-anim-ready", ""))
+    );
+    return () => {
+      cancelAnimationFrame(id);
+      document.body.removeAttribute("data-anim-ready");
+    };
+  }, []);
 }
 
-const features = [
-	{
-		num: "01",
-		accent: "var(--coral)",
-		title: "Filing Confidence",
-		body: "Check citations, generate tables of contents and authorities, and evaluate argument strength — all in one place. File with confidence.",
-		tag: "Smart Filing",
-		tagBg: "color-mix(in srgb, var(--coral) 12%, transparent)",
-		tagColor: "var(--coral)",
-	},
-	{
-		num: "02",
-		accent: "var(--gold)",
-		title: "Case Analysis",
-		body: "Upload and analyze documents in a secure, local system — not the cloud. Generate charts and visualizations for presentations, and extract insights from deposition transcripts.",
-		tag: "Document Analysis",
-		tagBg: "color-mix(in srgb, var(--gold) 12%, transparent)",
-		tagColor: "var(--gold)",
-	},
-	{
-		num: "03",
-		accent: "var(--teal)",
-		title: "Case Research",
-		body: "AI-powered legal research that understands jurisdiction, precedent, and the nuances of your matter. Find relevant cases and statutes without leaving your desk.",
-		tag: "Legal Research",
-		tagBg: "color-mix(in srgb, var(--teal) 12%, transparent)",
-		tagColor: "var(--teal)",
-	},
-	{
-		num: "04",
-		accent: "var(--ink-3)",
-		title: "Automatic Time Tracking",
-		body: "Passive, always-on billing capture. Relay watches your activity across matters and builds accurate time entries in the background — reviewed and billed on your schedule.",
-		tag: "Billing",
-		tagBg: "color-mix(in srgb, var(--ink) 8%, transparent)",
-		tagColor: "var(--ink-2)",
-	},
-];
+/* ─── Live "0 KB sent" status counter ─── */
+function useLiveStatus() {
+  const [uptime, setUptime] = useState("00:00");
+  useEffect(() => {
+    let secs = 0;
+    const id = setInterval(() => {
+      secs++;
+      const mm = String(Math.floor(secs / 60)).padStart(2, "0");
+      const ss = String(secs % 60).padStart(2, "0");
+      setUptime(`${mm}:${ss}`);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return uptime;
+}
 
-const privacyPillars = [
-	{
-		title: "No cloud processing",
-		accent: "var(--coral)",
-		body: "Every AI inference runs on your local hardware. Documents never travel over a network to reach a model.",
-	},
-	{
-		title: "No training on your data",
-		accent: "var(--teal)",
-		body: "Your briefs, contracts, and research are never used to train or improve any external model. Ever.",
-	},
-	{
-		title: "Bar-compliant by default",
-		accent: "var(--gold)",
-		body: "Your work stays yours: designed with confidentiality in mind. Relay is the AI that keeps your data on your machine.",
-	},
-];
+/* ─── SVG helpers ─── */
+const CheckSmSvg = () => (
+  <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 8.5l3.2 3L13 5" />
+  </svg>
+);
+const MailSvg = () => (
+  <svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2.5" y="4" width="13" height="10" rx="1.5" />
+    <path d="M3 5.5l6 4 6-4" />
+  </svg>
+);
+const WebSvg = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18" />
+    <path d="M12 3c2.6 2.5 2.6 15.5 0 18" />
+    <path d="M12 3c-2.6 2.5-2.6 15.5 0 18" />
+  </svg>
+);
+const MacSvg = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="4.5" />
+    <path d="M12 3.5v8" />
+    <path d="M7 8.5v1.4" />
+    <path d="M16 8.5v1.4" />
+    <path d="M8 14.5c1.6 1.7 6.4 1.7 8 0" />
+  </svg>
+);
+const WindowsSvg = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <rect x="3" y="3" width="8" height="8" />
+    <rect x="13" y="3" width="8" height="8" />
+    <rect x="3" y="13" width="8" height="8" />
+    <rect x="13" y="13" width="8" height="8" />
+  </svg>
+);
 
-const planFeatures = [
-	"Table of contents generation",
-	"Table of authorities",
-	"Unlimited case research",
-	"Automatic time tracking & billing export",
-	"Unlimited document uploads",
-	"Matter-level workspaces",
-	"Access to future features at competitive pricing",
-];
+/* ─── Brand mark ─── */
+const Brand = ({ className = "brand" }: { className?: string }) => (
+  <a className={className} href="#top" aria-label="Relay">
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img className="brand-mark" src="/relay-logos/white_relay.svg" alt="Relay" />
+  </a>
+);
 
+/* ─── Waitlist Form ─── */
+function WaitlistForm() {
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const val = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        inputRef.current.style.transition = "box-shadow 200ms";
+        inputRef.current.style.boxShadow = "0 0 0 2px rgba(217,116,63,0.5)";
+        setTimeout(() => { if (inputRef.current) inputRef.current.style.boxShadow = ""; }, 900);
+      }
+      return;
+    }
+    setLoading(true);
+    try {
+      await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: val }),
+      });
+    } catch {}
+    setName(val.split("@")[0]);
+    setSent(true);
+    setLoading(false);
+    setEmail("");
+    fireConfetti();
+  }
+
+  return (
+    <form
+      ref={formRef}
+      id="cta-form"
+      className={`cmd-input reveal${sent ? " sent" : ""}`}
+      style={{ ["--delay" as string]: "180ms" }}
+      onSubmit={handleSubmit}
+      noValidate
+    >
+      <span className="cmd-icon" aria-hidden="true"><MailSvg /></span>
+      <input
+        ref={inputRef}
+        type="email"
+        placeholder={sent ? `See you soon, ${name}` : "you@yourfirm.com"}
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        aria-label="Email address"
+      />
+      <span className="kbd-hint">↵ to send</span>
+      <button type="submit" disabled={loading}>
+        {sent ? (
+          <>On the list <CheckSmSvg /></>
+        ) : loading ? (
+          "Joining…"
+        ) : (
+          <>Join the Waitlist <span className="arr">→</span></>
+        )}
+      </button>
+    </form>
+  );
+}
+
+/* ─── Main Page ─── */
 export default function Home() {
-	useScrollReveal();
+  useHeroAnim();
+  useScrollReveal();
+  const uptime = useLiveStatus();
 
-	return (
-		<>
-			{/* ── NAV ── */}
-			<nav
-				className="fixed left-0 right-0 top-0 z-[100] flex h-16 items-center justify-between px-6 sm:px-12"
-				style={{
-					background: "color-mix(in srgb, var(--cream) 88%, transparent)",
-					backdropFilter: "blur(12px)",
-					borderBottom:
-						"1px solid color-mix(in srgb, var(--ink) 8%, transparent)",
-				}}
-			>
-				<a href="#" className="no-underline flex items-center">
-					<Image
-						src="/relay-logos/black_relay.svg"
-						alt="Relay"
-						width={110}
-						height={28}
-						priority
-					/>
-				</a>
-				<div className="flex items-center gap-4 sm:gap-8">
-					<a
-						href="#features"
-						className="hidden sm:block text-sm text-relay-ink-2 transition-colors hover:text-relay-ink"
-					>
-						Features
-					</a>
-					<a
-						href="#pricing"
-						className="hidden sm:block text-sm text-relay-ink-2 transition-colors hover:text-relay-ink"
-					>
-						Pricing
-					</a>
-					<a
-						href="#waitlist"
-						className="rounded-[6px] px-4 sm:px-5 py-1.5 text-sm font-medium transition-all no-underline"
-						style={{
-							border: "1.5px solid var(--coral)",
-							color: "var(--coral)",
-							background: "transparent",
-						}}
-						onMouseEnter={(e) => {
-							const el = e.currentTarget;
-							el.style.background = "var(--coral)";
-							el.style.color = "#fff";
-						}}
-						onMouseLeave={(e) => {
-							const el = e.currentTarget;
-							el.style.background = "transparent";
-							el.style.color = "var(--coral)";
-						}}
-					>
-						Join Waitlist
-					</a>
-				</div>
-			</nav>
+  return (
+    <>
+      {/* ── NAV ── */}
+      <nav className="nav">
+        <div className="nav-inner">
+          <Brand />
+          <div className="nav-links">
+            <a href="#features"><span className="num">i.</span>Practice</a>
+            <a href="#privacy"><span className="num">ii.</span>Doctrine</a>
+            <a href="#pricing"><span className="num">iii.</span>Retainer</a>
+            <a href="#waitlist"><span className="num">iv.</span>Access</a>
+          </div>
+          <div className="nav-right">
+            <a href="#waitlist" className="nav-cta">
+              Join the Waitlist <span className="arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </nav>
 
-			{/* ── HERO ── */}
-			<section className="hero-bg relative overflow-hidden flex min-h-screen flex-col items-center justify-center px-6 pb-12 pt-[100px] sm:px-12 sm:pb-20 sm:pt-[120px] text-center">
-				<h1
-					className="hero-heading relative z-10 mx-auto w-full max-w-[920px] font-serif font-medium leading-[1.1] tracking-[-0.02em]"
-					style={{
-						fontSize: "clamp(2.6rem, 5.5vw, 6rem)",
-					}}
-				>
-					<span className="hero-heading-row">
-						<span
-							className="hero-h-first block opacity-0"
-							style={{ animation: "fadeUp 0.8s 0.25s ease forwards" }}
-						>
-							Upload
-						</span>
-						<span className="hero-h-mid" aria-hidden="true" />
-						<em
-							className="hero-h-second block font-semibold italic opacity-0"
-							style={{
-								color: "var(--coral)",
-								animation: "fadeUp 0.8s 0.25s ease forwards",
-							}}
-						>
-							Anything.
-						</em>
-					</span>
-					<span className="hero-heading-row">
-						<span
-							className="hero-h-first block opacity-0"
-							style={{ animation: "fadeUp 0.9s 0.35s ease forwards" }}
-						>
-							Track
-						</span>
-						<span className="hero-h-mid" aria-hidden="true" />
-						<em
-							className="hero-h-second block font-semibold italic opacity-0"
-							style={{
-								color: "var(--coral)",
-								animation: "fadeUp 0.9s 0.35s ease forwards",
-							}}
-						>
-							Everything.
-						</em>
-					</span>
-					<span className="hero-heading-row">
-						<span
-							className="hero-h-first block opacity-0"
-							style={{ animation: "fadeUp 1s 0.45s ease forwards" }}
-						>
-							Share
-						</span>
-						<span className="hero-h-mid" aria-hidden="true" />
-						<em
-							className="hero-h-second block font-semibold italic opacity-0"
-							style={{
-								color: "var(--coral)",
-								animation: "fadeUp 1s 0.45s ease forwards",
-							}}
-						>
-							Nothing.
-						</em>
-					</span>
-				</h1>
-				<p
-					className="relative z-10 mt-7 max-w-[560px] font-light leading-[1.7] text-relay-ink-2 opacity-0"
-					style={{
-						fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
-						animation: "fadeUp 0.8s 0.4s ease forwards",
-					}}
-				>
-					Relay is the AI legal assistant that runs entirely on your machine. No
-					cloud. No compromise.
-				</p>
+      {/* ── HERO ── */}
+      <section className="hero" id="top">
+        <div className="wrap hero-inner">
+          <div className="lockup">
+            <div className="kicker">
+              <span className="dot" />
+              Now in early access · Web, macOS &amp; Windows
+            </div>
 
-				<div
-					className="relative z-10 mt-12 opacity-0"
-					style={{ animation: "fadeUp 0.8s 0.55s ease forwards" }}
-				>
-					<WaitlistForm
-						pill
-						buttonLabel="Join the Waitlist"
-						noteText="No commitment. Early access pricing guaranteed."
-					/>
-				</div>
-			</section>
+            <h1 className="display h1">
+              Counsel<br />
+              that <em>never</em> leaves<br />
+              your machine.
+              <span className="smalls">A local-first AI &nbsp;§&nbsp; for the practice of law</span>
+            </h1>
 
-			<div
-				className="h-px"
-				style={{
-					background: "color-mix(in srgb, var(--ink) 10%, transparent)",
-				}}
-			/>
+            <p className="lede">
+              Relay runs entirely on your hardware. Upload anything. Track everything.
+              Share nothing. Built for attorneys who truly care about their client&apos;s privacy.
+            </p>
 
-			{/* ── MISSION ── */}
-			<section className="mx-auto grid max-w-[1200px] grid-cols-1 sm:grid-cols-2 items-center gap-10 sm:gap-20 px-6 sm:px-12 py-16 sm:py-[120px]">
-				<div className="reveal">
-					<p
-						className="mb-5 text-[0.75rem] font-medium uppercase tracking-[0.12em]"
-						style={{ color: "var(--coral)" }}
-					>
-						Our mission
-					</p>
-					<h2
-						className="font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-						style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
-					>
-						<strong
-							className="font-semibold not-italic"
-							style={{ color: "var(--coral)" }}
-						>
-							Your
-						</strong>{" "}
-						AI assistant,
-						<br />
-						not ours.
-					</h2>
-				</div>
-				<div className="reveal space-y-5">
-					<p className="text-[1.1rem] font-light leading-[1.8] text-relay-ink-2">
-						Every document you upload, every research query you run, every hour
-						you log — it all{" "}
-						<mark
-							className="rounded-sm px-1 py-0.5"
-							style={{
-								background: "color-mix(in srgb, var(--coral) 15%, transparent)",
-								color: "inherit",
-							}}
-						>
-							stays on your hardware
-						</mark>
-						. Relay runs entirely on your local machine.
-					</p>
-					<p className="text-[1.1rem] font-light leading-[1.8] text-relay-ink-2">
-						We built Relay with one constraint that can never be negotiated:{" "}
-						<mark
-							className="rounded-sm px-1 py-0.5"
-							style={{
-								background: "color-mix(in srgb, var(--coral) 15%, transparent)",
-								color: "inherit",
-							}}
-						>
-							we never see anything
-						</mark>
-						. No data ever reaches our servers. No third-party models are
-						trained on your briefs. No cloud logs exist to subpoena.
-					</p>
-					<p className="text-[1.1rem] font-light leading-[1.8] text-relay-ink-2">
-						Just a faster, smarter practice — on your terms.
-					</p>
-				</div>
-			</section>
+            <div className="hero-ctas">
+              <a href="#waitlist" className="btn-primary">
+                Join the Waitlist
+                <span className="arr">→</span>
+              </a>
+            </div>
 
-			<div
-				className="h-px"
-				style={{
-					background: "color-mix(in srgb, var(--ink) 10%, transparent)",
-				}}
-			/>
+            <div className="platforms" aria-label="Available on Web, macOS, and Windows">
+              <span className="lbl">Available on</span>
+              <span className="plat"><WebSvg />Web</span>
+              <span className="plat"><MacSvg />macOS</span>
+              <span className="plat"><WindowsSvg />Windows</span>
+            </div>
+          </div>
+        </div>
 
-			{/* ── FEATURES ── */}
-			<section
-				className="py-16 sm:py-[120px]"
-				id="features"
-				style={{ background: "#F3EFE4" }}
-			>
-				<div className="mx-auto max-w-[1200px] px-6 sm:px-12">
-					<div className="reveal mb-10 sm:mb-14 flex flex-col sm:flex-row items-start sm:items-end gap-6 sm:gap-0 justify-between">
-						<h2
-							className="max-w-[480px] font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-							style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
-						>
-							Everything your practice
-							<br />
-							needs to move{" "}
-							<em className="italic" style={{ color: "var(--coral)" }}>
-								faster
-							</em>
-							.
-						</h2>
-						<p className="max-w-[260px] text-[0.95rem] font-light leading-[1.7] text-relay-ink-2">
-							Four tools, built for the documents and workflows lawyers actually
-							deal with every day.
-						</p>
-					</div>
+        <div className="showcase">
+          {/* floating sub-cards */}
+          <div className="float float-cite" aria-hidden="true">
+            <div className="float-head"><span>Citation</span><span className="badge">Check Passed</span></div>
+            <div className="float-body">
+              <p className="cite-name">City of Paris v. Abbott,<br />360 S.W.3d 567, 580–81</p>
+              <span className="cite-check">
+                <CheckSmSvg />
+                Verified locally
+              </span>
+            </div>
+          </div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-						{features.map((f) => (
-							<div
-								key={f.num}
-								className="reveal group relative overflow-hidden rounded-[14px] bg-relay-cream p-6 sm:p-10 transition-all duration-300"
-								style={{
-									border:
-										"1.5px solid color-mix(in srgb, var(--ink) 10%, transparent)",
-								}}
-								onMouseEnter={(e) => {
-									const el = e.currentTarget;
-									el.style.borderColor = "var(--coral)";
-									el.style.transform = "translateY(-4px)";
-									el.style.boxShadow =
-										"0 16px 48px color-mix(in srgb, var(--coral) 10%, transparent)";
-								}}
-								onMouseLeave={(e) => {
-									const el = e.currentTarget;
-									el.style.borderColor =
-										"color-mix(in srgb, var(--ink) 10%, transparent)";
-									el.style.transform = "translateY(0)";
-									el.style.boxShadow = "none";
-								}}
-							>
-								<span
-									className="absolute right-8 top-6 font-serif text-[4.5rem] font-light leading-none"
-									style={{
-										color: "color-mix(in srgb, var(--ink) 5%, transparent)",
-									}}
-								>
-									{f.num}
-								</span>
-								<div
-									className="mb-8 h-[3px] w-10 rounded-full"
-									style={{ background: f.accent }}
-								/>
-								<h3 className="mb-3.5 font-serif text-[1.85rem] font-medium leading-[1.2] text-relay-ink">
-									{f.title}
-								</h3>
-								<p className="text-[1rem] font-light leading-[1.8] text-relay-ink-2">
-									{f.body}
-								</p>
-								<span
-									className="mt-7 inline-block rounded-full px-3 py-1.5 text-[0.72rem] font-medium uppercase tracking-[0.08em]"
-									style={{ background: f.tagBg, color: f.tagColor }}
-								>
-									{f.tag}
-								</span>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
+          <div className="float float-billing" aria-hidden="true">
+            <div className="fb-head"><span>Today&apos;s tracking</span><span className="live-dot">● LIVE</span></div>
+            <div className="fb-rows">
+              <div className="fb-row"><span className="matter">Thorngate v. Meridian</span><span className="hrs">2.4h</span><span className="amt">$840</span></div>
+              <div className="fb-row"><span className="matter">Rivera Estate</span><span className="hrs">1.1h</span><span className="amt">$385</span></div>
+              <div className="fb-row"><span className="matter">Jones Patent</span><span className="hrs">0.6h</span><span className="amt">$210</span></div>
+            </div>
+          </div>
 
-			{/* ── PRIVACY ── */}
-			<section className="mx-auto max-w-[1200px] px-6 sm:px-12 py-16 sm:py-[120px] text-center">
-				<p
-					className="reveal mb-5 text-[0.75rem] font-medium uppercase tracking-[0.12em]"
-					style={{ color: "var(--coral)" }}
-				>
-					Why local matters
-				</p>
-				<h2
-					className="reveal mx-auto mb-5 max-w-[600px] font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-					style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
-				>
-					Your clients trust you.
-					<br />
-					You should trust your tools.
-				</h2>
-				<p className="reveal mx-auto mb-[60px] max-w-[540px] text-[1.05rem] font-light leading-[1.8] text-relay-ink-2">
-					Relay&apos;s architecture is built from the ground up to keep
-					everything in your office.
-				</p>
-				<div className="reveal grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-7">
-					{privacyPillars.map((p) => (
-						<div
-							key={p.title}
-							className="rounded-[14px] bg-relay-cream p-6 sm:p-10 text-left transition-all duration-300"
-							style={{
-								border:
-									"1.5px solid color-mix(in srgb, var(--ink) 10%, transparent)",
-							}}
-							onMouseEnter={(e) => {
-								const el = e.currentTarget;
-								el.style.borderColor = "var(--coral)";
-								el.style.transform = "translateY(-4px)";
-								el.style.boxShadow =
-									"0 16px 48px color-mix(in srgb, var(--coral) 10%, transparent)";
-							}}
-							onMouseLeave={(e) => {
-								const el = e.currentTarget;
-								el.style.borderColor =
-									"color-mix(in srgb, var(--ink) 10%, transparent)";
-								el.style.transform = "translateY(0)";
-								el.style.boxShadow = "none";
-							}}
-						>
-							<h3 className="mb-5 font-serif text-[1.85rem] font-medium leading-[1.2] text-relay-ink">
-								{p.title}
-							</h3>
-							<div
-								className="mb-5 h-[3px] w-10 rounded-full"
-								style={{ background: p.accent }}
-							/>
-							<p className="text-[1rem] font-light leading-[1.8] text-relay-ink-2">
-								{p.body}
-							</p>
-						</div>
-					))}
-				</div>
-			</section>
+          <div className="float-status" aria-hidden="true">
+            <span className="ok-dot" />
+            0 KB sent · uptime {uptime} · local model
+          </div>
 
-			<div
-				className="h-px"
-				style={{
-					background: "color-mix(in srgb, var(--ink) 10%, transparent)",
-				}}
-			/>
+          <div className="showcase-main">
+            <div className="showcase-bar">
+              <div className="lights"><span /><span /><span /></div>
+              <div className="showcase-title">relay · Thorngate v. Meridian</div>
+              <div style={{ width: 50 }} />
+            </div>
+            <div className="showcase-screen">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/showcase/showcase-main.png" alt="Relay matter workspace for Thorngate v. Meridian, with a sidebar of matters, recent chats, knowledge base, and document library." />
+            </div>
+          </div>
+        </div>
+      </section>
 
-			{/* ── PRICING ── */}
-			<section
-				className="px-6 sm:px-12 py-16 sm:py-[120px]"
-				id="pricing"
-				style={{ background: "#F3EFE4" }}
-			>
-				<div className="mx-auto max-w-[1200px]">
-					<div className="reveal mb-[60px] text-center">
-						<h2
-							className="mb-4 font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-							style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
-						>
-							Simple, honest pricing.
-						</h2>
-						<p className="text-[1.05rem] font-light text-relay-ink-2">
-							No usage fees. No per-query charges. Everything included.
-						</p>
-					</div>
+      {/* ── MARQUEE STRIP ── */}
+      <div className="strip" aria-hidden="true">
+        <div className="strip-inner">
+          {[0, 1].map((dup) => (
+            <span key={dup} style={{ display: "inline-flex", alignItems: "center" }}>
+              <span className="item serif">Local-first.</span><span className="dot">❦</span>
+              <span className="item mono">Bar-compliant by default</span><span className="dot">·</span>
+              <span className="item serif">No cloud, ever.</span><span className="dot">❦</span>
+              <span className="item mono">Privileged by design</span><span className="dot">·</span>
+              <span className="item serif">Runs on your hardware.</span><span className="dot">❦</span>
+              <span className="item mono">Built for civil litigation</span><span className="dot">·</span>
+              <span className="item serif">Discovery-safe.</span><span className="dot">❦</span>
+              <span className="item mono">Air-gapped capable</span><span className="dot">·</span>
+            </span>
+          ))}
+        </div>
+      </div>
 
-					<div className="reveal mx-auto max-w-[860px]">
-						<div
-							className="flex flex-col sm:grid items-start gap-8 sm:gap-12 rounded-2xl bg-relay-cream p-8 sm:p-[52px_56px]"
-							style={{
-								gridTemplateColumns: "1fr auto 1fr",
-								border: "1.5px solid var(--coral)",
-							}}
-						>
-							{/* Left: pricing columns */}
-							<div>
-								<span
-									className="mb-7 inline-block rounded-full px-3.5 py-1.5 text-[0.72rem] font-medium uppercase tracking-[0.08em] text-white"
-									style={{ background: "var(--coral)" }}
-								>
-									Early Adopter
-								</span>
-								<div className="flex">
-									<div className="flex-1">
-										<p
-											className="mb-3 text-[0.7rem] font-medium uppercase tracking-[0.1em]"
-											style={{ color: "var(--coral)" }}
-										>
-											Early Adopter Price
-										</p>
-										<div
-											className="font-serif text-[2.6rem] font-medium leading-[1.1]"
-											style={{ color: "var(--coral)" }}
-										>
-											<sup className="align-super text-[1.1rem]">$</sup>0
-										</div>
-										<div className="mb-1 text-[0.8rem] font-light text-relay-ink-2">
-											setup fee
-										</div>
-										<div
-											className="mt-3 font-serif text-[2.6rem] font-medium leading-[1.1]"
-											style={{ color: "var(--coral)" }}
-										>
-											<sup className="align-super text-[1.1rem]">$</sup>50
-										</div>
-										<div className="text-[0.8rem] font-light text-relay-ink-2">
-											/ user / month
-										</div>
-									</div>
-									<div
-										className="mx-6 self-stretch"
-										style={{
-											width: "1px",
-											background:
-												"color-mix(in srgb, var(--ink) 12%, transparent)",
-										}}
-									/>
-									<div className="flex-1">
-										<p className="mb-3 text-[0.7rem] font-medium uppercase tracking-[0.1em] text-relay-ink-3">
-											Standard Price
-										</p>
-										<div className="font-serif text-[2.2rem] font-light leading-[1.1] text-relay-ink-3 line-through">
-											<sup className="align-super text-[1rem]">$</sup>2,000
-										</div>
-										<div className="mb-1 text-[0.8rem] font-light text-relay-ink-3">
-											setup fee
-										</div>
-										<div className="mt-3 font-serif text-[2.2rem] font-light leading-[1.1] text-relay-ink-3 line-through">
-											<sup className="align-super text-[1rem]">$</sup>200
-										</div>
-										<div className="text-[0.8rem] font-light text-relay-ink-3">
-											/ user / month
-										</div>
-									</div>
-								</div>
-								<p className="mt-5 text-[0.82rem] font-light leading-[1.7] text-relay-ink-3">
-									Lock in early adopter pricing by joining the waitlist. Pricing
-									guaranteed for the lifetime of your subscription.
-								</p>
-							</div>
+      {/* ── FEATURES ── */}
+      <section className="features" id="features">
+        <div className="wrap">
+          <div className="orn reveal" style={{ marginBottom: 96 }}>
+            <span className="glyph">§</span>
+            <span className="mono">The Practice</span>
+            <span className="glyph">§</span>
+          </div>
 
-							{/* Divider */}
-							<div
-								className="hidden sm:block self-stretch"
-								style={{
-									width: "1px",
-									background: "color-mix(in srgb, var(--ink) 10%, transparent)",
-								}}
-							/>
+          {/* BOOK I — Filing Confidence */}
+          <div className="feature-row reveal">
+            <div className="feature-copy">
+              <div className="feature-meta">
+                <span className="roman">I.</span>
+                <div className="meta-text">
+                  <div className="book">Book I &nbsp;·&nbsp; Of Filings</div>
+                  <div className="tag">Smart filing</div>
+                </div>
+              </div>
+              <h2 className="display h2">File with <em>confidence.</em></h2>
+              <p className="lede">Check every citation. Generate tables of contents and authorities in seconds. Evaluate argument strength before opposing counsel does, all without leaving your draft.</p>
+              <ul className="feature-bullets">
+                <li><span className="marker">¶ 1</span><span><b>Citation verification</b> flags shepardized changes against the offline reporter snapshot bundled with Relay.</span></li>
+                <li><span className="marker">¶ 2</span><span><b>One-click TOA &amp; TOC</b>, extracted in your firm&apos;s house style. Export to .docx with formatting intact.</span></li>
+                <li><span className="marker">¶ 3</span><span><b>Argument strength scoring</b> gives an objective read on which arguments carry weight, computed locally.</span></li>
+              </ul>
+            </div>
+            <div className="feature-art">
+              <div className="stamp" aria-hidden="true"><div className="inner">Relay<b>§ I</b>Filings</div></div>
+              <div className="feature-art-bar">
+                <div className="lights"><span /><span /><span /></div>
+                <span className="label">citation check · Thorngate v. Meridian</span>
+              </div>
+              <div className="feature-art-screen" style={{ background: "#fff" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/showcase/citation.png" alt="Citation check panel showing case citation City of Paris v. Abbott alongside brief excerpt." style={{ top: 0, left: 0, width: "100%" }} />
+              </div>
+            </div>
+          </div>
 
-							{/* Right: features list */}
-							<div>
-								<ul className="space-y-3">
-									{planFeatures.map((item) => (
-										<li
-											key={item}
-											className="flex items-start gap-2.5 text-[0.9rem] font-light text-relay-ink-2"
-										>
-											<span
-												className="mt-0.5 shrink-0 text-[0.75rem] font-medium"
-												style={{ color: "var(--coral)" }}
-											>
-												✓
-											</span>
-											{item}
-										</li>
-									))}
-								</ul>
-								<a
-									href="#waitlist"
-									className="mt-7 block w-full rounded-[6px] py-3.5 text-center font-sans text-[0.9rem] font-medium text-white no-underline transition-all"
-									style={{ background: "var(--coral)" }}
-									onMouseEnter={(e) =>
-										((e.currentTarget as HTMLElement).style.background =
-											"oklch(54% 0.195 30)")
-									}
-									onMouseLeave={(e) =>
-										((e.currentTarget as HTMLElement).style.background =
-											"var(--coral)")
-									}
-								>
-									Join the Waitlist
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
+          {/* BOOK II — Document Analysis */}
+          <div className="feature-row flip reveal">
+            <div className="feature-copy">
+              <div className="feature-meta">
+                <span className="roman">II.</span>
+                <div className="meta-text">
+                  <div className="book">Book II &nbsp;·&nbsp; Of Matters</div>
+                  <div className="tag">Document analysis</div>
+                </div>
+              </div>
+              <h2 className="display h2">A matter that <em>thinks</em> with you.</h2>
+              <p className="lede">Drop in a complaint, a deposition, a 4,000-page production. Relay reads it where it sits, on your own disk, and surfaces what changes the case.</p>
+              <ul className="feature-bullets">
+                <li><span className="marker">¶ 1</span><span><b>Deposition inconsistency detection</b> surfaces conflicts with documented timelines.</span></li>
+                <li><span className="marker">¶ 2</span><span><b>Visualizations on demand</b> generate timelines, party diagrams, and demonstratives from extracted facts.</span></li>
+                <li><span className="marker">¶ 3</span><span><b>Matter-level memory</b> means Relay remembers parties, deadlines, and strategy across every chat.</span></li>
+              </ul>
+            </div>
+            <div className="feature-art">
+              <div className="stamp gold" aria-hidden="true"><div className="inner">Relay<b>§ II</b>Matters</div></div>
+              <div className="feature-art-bar">
+                <div className="lights"><span /><span /><span /></div>
+                <span className="label">matter workspace · ask anything</span>
+              </div>
+              <div className="feature-art-screen" style={{ background: "#f3efe4" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/showcase/matter.png" alt="Relay 'Ask me anything about your matter' prompt with first-upload suggestions and reminders." style={{ top: "5%", left: "4%", width: "92%" }} />
+              </div>
+            </div>
+          </div>
 
-			{/* ── BOTTOM CTA ── */}
-			<section
-				className="bottom-cta-bg relative overflow-hidden px-6 py-20 sm:px-12 sm:py-[140px] text-center"
-				id="waitlist"
-			>
-				<p
-					className="reveal mb-4 text-[0.75rem] font-medium uppercase tracking-[0.12em]"
-					style={{ color: "var(--coral)" }}
-				>
-					Early access
-				</p>
-				<h2
-					className="reveal mx-auto mb-4 max-w-[560px] font-serif font-normal leading-[1.15] tracking-[-0.015em]"
-					style={{ fontSize: "clamp(2rem, 3.5vw, 3.5rem)" }}
-				>
-					Be first in line.
-				</h2>
-				<p className="reveal mx-auto mb-12 max-w-[400px] text-[1.05rem] font-light leading-relaxed text-relay-ink-2">
-					We&apos;re rolling out to a small group of attorneys and support
-					staff. Join the waitlist and lock in early access pricing.
-				</p>
-				<div className="reveal flex justify-center">
-					<WaitlistForm buttonLabel="Request Access" />
-				</div>
-			</section>
+          {/* BOOK III — Billing */}
+          <div className="feature-row reveal">
+            <div className="feature-copy">
+              <div className="feature-meta">
+                <span className="roman">III.</span>
+                <div className="meta-text">
+                  <div className="book">Book III &nbsp;·&nbsp; Of Hours</div>
+                  <div className="tag">Billing</div>
+                </div>
+              </div>
+              <h2 className="display h2">Passive billing that <em>finds the hours</em> you lost.</h2>
+              <p className="lede">Relay watches your work across matters, quietly and locally, and builds accurate time entries in the background. Review weekly. Bill on your schedule.</p>
+              <ul className="feature-bullets">
+                <li><span className="marker">¶ 1</span><span><b>Activity capture</b> matches windows, files, and email subjects to matters automatically.</span></li>
+                <li><span className="marker">¶ 2</span><span><b>Confidence flags</b> surface low-confidence entries for your review before export.</span></li>
+                <li><span className="marker">¶ 3</span><span><b>Export-ready entries</b> push to Clio, PracticePanther, or a clean CSV.</span></li>
+              </ul>
+            </div>
+            <div className="feature-art">
+              <div className="stamp gold" aria-hidden="true"><div className="inner">Relay<b>§ III</b>Billing</div></div>
+              <div className="feature-art-bar">
+                <div className="lights"><span /><span /><span /></div>
+                <span className="label">billing · review &amp; approve</span>
+              </div>
+              <div className="feature-art-screen" style={{ background: "#f3efe4" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/showcase/billing.png" alt="Billing review screen showing tracked time entries grouped by matter with hours, rate, and amount." style={{ top: "-4%", left: 0, width: "100%" }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-			{/* ── FOOTER ── */}
-			<footer
-				className="flex flex-col sm:flex-row items-center gap-4 sm:gap-0 justify-between px-6 sm:px-12 py-8 sm:py-10 text-center sm:text-left"
-				style={{
-					borderTop:
-						"1px solid color-mix(in srgb, var(--ink) 10%, transparent)",
-				}}
-			>
-				<div className="flex items-center">
-					<Image
-						src="/relay-logos/black_relay.svg"
-						alt="Relay"
-						width={90}
-						height={22}
-					/>
-				</div>
-				<p className="text-[0.8rem] text-relay-ink-3">
-					© 2026 Relay Legal Technologies, Inc.
-				</p>
-				<div className="flex gap-6">
-					<a
-						href="mailto:support@relay-law.com"
-						className="text-[0.8rem] text-relay-ink-3 no-underline transition-colors hover:text-relay-ink"
-					>
-						Contact
-					</a>
-				</div>
-			</footer>
-		</>
-	);
+      {/* ── PRIVACY DOCTRINE ── */}
+      <section className="privacy" id="privacy">
+        <div className="privacy-inner">
+          <div className="wrap privacy-head reveal">
+            <span className="mono">The Privacy Doctrine</span>
+            <h2 className="display h2">
+              We never see <em>anything.</em>
+              <br />
+              <span style={{ opacity: 0.45 }}>By design, not by policy.</span>
+            </h2>
+            <p>Every guarantee below is enforced at the <em>architecture</em> layer, not the contract layer. Pull the network cable and Relay still works.</p>
+          </div>
+
+          <div className="doctrine reveal" style={{ ["--delay" as string]: "100ms" }}>
+            <div className="article">
+              <div className="num">I.<small>Inference</small></div>
+              <div className="copy">
+                <h4>Inference is <em>local.</em></h4>
+                <p>Every AI inference runs on the computer in your office. No prompt, no document, no thought leaves the machine. <strong>Verify with your own packet capture.</strong></p>
+              </div>
+            </div>
+            <div className="article">
+              <div className="num">II.<small>Storage</small></div>
+              <div className="copy">
+                <h4>Storage is <em>local.</em></h4>
+                <p>Briefs, contracts, depositions, and the matter knowledge base live in an encrypted vault on your disk. <strong>We don&apos;t have credentials, and we couldn&apos;t decrypt them if subpoenaed.</strong></p>
+              </div>
+            </div>
+            <div className="article">
+              <div className="num">III.<small>Training</small></div>
+              <div className="copy">
+                <h4>Training is <em>not</em> on your data.</h4>
+                <p>Your work product is never used to train, fine-tune, or evaluate any model, whether ours or anyone else&apos;s. <strong>Telemetry is opt-in, anonymous, and limited to crash reports.</strong></p>
+              </div>
+            </div>
+            <div className="article">
+              <div className="num">IV.<small>Compliance</small></div>
+              <div className="copy">
+                <h4>Compliance is the <em>default</em> state.</h4>
+                <p>Relay&apos;s architecture maps cleanly to ABA Model Rule 1.6 and the analogous state rules. <strong>No additional configuration, no enterprise plan, no &ldquo;private mode&rdquo; toggle to forget.</strong></p>
+              </div>
+            </div>
+
+            <div className="affidavit reveal" style={{ ["--delay" as string]: "200ms" }}>
+              <span className="sig">Enforced in code, not in a contract.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PRICING / RETAINER ── */}
+      <section className="pricing" id="pricing">
+        <div className="wrap">
+          <div className="pricing-head reveal">
+            <span className="mono coral">The Retainer</span>
+            <h2 className="display h2">One price. <em>No usage games.</em></h2>
+            <p>No per-query charges. No contacting sales. Unlimited everything, forever at an affordable price.</p>
+          </div>
+
+          <div className="retainer reveal" style={{ ["--delay" as string]: "100ms" }}>
+            <div className="retainer-head">
+              <div className="doc-no">Early adopter pricing <b>№ 2026-EA-001</b></div>
+              <div className="seal-mini">Limited time</div>
+            </div>
+            <div className="retainer-grid">
+              <div className="retainer-left">
+                <h3>Simple <em>pricing.</em></h3>
+                <div className="sub">Per user &nbsp;·&nbsp; billed monthly</div>
+
+                <div className="price-rows">
+                  <div>
+                    <div className="label">Early adopter</div>
+                    <div className="amount"><em>$50</em><span className="per">/mo</span></div>
+                    <div className="unit">per user · $0 setup</div>
+                  </div>
+                  <div>
+                    <div className="label strike">Standard</div>
+                    <div className="amount muted"><span className="crossit">$200</span><span className="per">/mo</span></div>
+                    <div className="unit">per user · $2,000 setup</div>
+                  </div>
+                </div>
+
+                <div className="terms">
+                  <p>Lock in early adopter pricing today. <em>Held for the life of your subscription</em>. No annual price hikes, no surprise tiering.</p>
+                </div>
+              </div>
+
+              <div className="retainer-right">
+                <div className="feat-list-label">What&apos;s included</div>
+                <ul className="feat-list">
+                  <li><span className="num">a.</span><span><em>Tables</em> of contents &amp; authorities, generated</span></li>
+                  <li><span className="num">b.</span><span><em>Unlimited</em> case queries</span></li>
+                  <li><span className="num">c.</span><span><em>Automatic</em> time tracking &amp; billing export</span></li>
+                  <li><span className="num">d.</span><span><em>Unlimited</em> document uploads</span></li>
+                  <li><span className="num">e.</span><span><em>Matter-level</em> workspaces</span></li>
+                  <li><span className="num">f.</span><span><em>Future</em> features at competitive pricing</span></li>
+                </ul>
+                <a href="/billing" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+                  Get started
+                  <span className="arr">→</span>
+                </a>
+                <a href="#waitlist" className="retainer-secondary">or join the waitlist</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <section className="cta" id="waitlist">
+        <div className="wrap cta-inner">
+          <div className="orn reveal" style={{ marginBottom: 28 }}>
+            <span className="mono coral">Early Access</span>
+          </div>
+          <h2 className="display h2 reveal" style={{ ["--delay" as string]: "60ms" }}>Be <em>first</em> in line.</h2>
+          <p className="lede reveal" style={{ ["--delay" as string]: "120ms" }}>
+            Rolling out to a small group of attorneys and support staff.
+            Join the waitlist and lock in <em>early access</em> pricing.
+          </p>
+          <WaitlistForm />
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="footer">
+        <div className="wrap">
+          <div className="footer-top">
+            <div>
+              <Brand />
+              <p className="footer-tagline">The AI counsel that runs entirely on your machine.</p>
+            </div>
+            <div>
+              <h5>Practice</h5>
+              <ul>
+                <li><a href="#features">Filings</a></li>
+                <li><a href="#features">Matters</a></li>
+                <li><a href="#features">Research</a></li>
+                <li><a href="#features">Billing</a></li>
+              </ul>
+            </div>
+            <div>
+              <h5>Company</h5>
+              <ul>
+                <li><a href="#">About</a></li>
+                <li><a href="mailto:support@relay-law.com">Contact</a></li>
+                <li><a href="#">Security</a></li>
+                <li><a href="#privacy">Doctrine</a></li>
+              </ul>
+            </div>
+            <div>
+              <h5>Resources</h5>
+              <ul>
+                <li><a href="#">Documentation</a></li>
+                <li><a href="#">System requirements</a></li>
+                <li><a href="#">Privacy whitepaper</a></li>
+                <li><a href="#pricing">Retainer</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="colophon">
+            {/* <div className="megabrand" aria-hidden="true">Relay.</div> */}
+            <div className="colophon-bar">
+              <span>© 2026 · Relay Legal Technologies, Inc.</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </>
+  );
 }

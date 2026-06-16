@@ -1,31 +1,32 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { Onest, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
+const onest = Onest({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-cormorant",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-onest",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const interTight = Inter_Tight({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
-  variable: "--font-dm-sans",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter-tight",
   display: "swap",
 });
 
-/** Avoids static prerender errors when Clerk keys are missing or invalid during `next build`. */
-export const dynamic = "force-dynamic";
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Relay — AI for Law, Kept Local",
+  title: "Relay — Counsel that never leaves your machine",
   description:
-    "Upload Anything, Track Everything, Share Nothing. Relay is the AI legal assistant that runs entirely on your machine. No cloud. No compromise.",
+    "Relay runs entirely on your own hardware — your files, your research, and your clients' confidences never leave the building. The local-first AI for the practice of law.",
 };
 
 export default function RootLayout({
@@ -34,10 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
-      <body>
-        <ClerkProvider waitlistUrl="/">{children}</ClerkProvider>
-      </body>
+    <html
+      lang="en"
+      className={`${onest.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
+    >
+      <body>{children}</body>
     </html>
   );
 }
