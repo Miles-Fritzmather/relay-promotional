@@ -8,11 +8,17 @@
       "Bash(npm run *)",
       "Bash(npx tsc *)",
       "Bash(Read \"C:\\\\Users\\\\matth\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-matth-VSC-LawyerApp-relay-promotional\\\\41e94b8d-c15c-44bf-b13e-c720d4ba153d\\\\tasks\\\\bshmfovbg.output\")",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(node diag-redis.mjs)",
+      "Bash(ls -la \"build/icons/icon.png\" \"build/icons/icon.icns\" \"build/icons/AppIcon.icns\" \"public/favicon.png\")",
+      "Bash(file \"build/icons/icon.png\" \"public/favicon.png\")",
+      "Bash(cd \"c:/Users/matth/VSC/LawyerApp/relay-promotional\" && cp \"/c/Users/matth/VSC/LawyerApp/relay/src/frontend/build/icons/icon.png\" app/icon.png && rm -f app/icon.svg && echo \"=== app/ icon files now ===\" && ls -la app/icon.* && file app/icon.png)",
+      "Bash(grep -rnB2 -A4 \"STRIPE_PRICE_ID\" app lib)"
     ],
     "additionalDirectories": [
       "C:\\Users\\matth\\.claude\\commands",
-      "C:\\Users\\matth\\.claude\\skills"
+      "C:\\Users\\matth\\.claude\\skills",
+      "C:\\Users\\matth\\VSC\\LawyerApp\\relay\\src\\frontend\\build\\icons"
     ]
   }
 }

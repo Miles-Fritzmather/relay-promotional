@@ -40,6 +40,8 @@ export interface FirmRecord {
   activatedAt?: string | null;
   /** Optional: bind the license to a specific tailnet so a key can't be reused elsewhere. */
   tailnetId?: string;
+  /** Mirrors Stripe's cancel_at_period_end — true when the firm has scheduled a cancel. */
+  cancelAtPeriodEnd?: boolean;
   updatedAt: string;
 }
 
