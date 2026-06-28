@@ -42,9 +42,9 @@ export default function FleetPage() {
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "48px 32px 96px" }}>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 16 }}>
           <div>
-            <span className="mono coral">Cloud Ops</span>
+            <span className="mono coral">Management</span>
             <h1 className="display h3" style={{ margin: "10px 0 0" }}>
-              Fleet
+              Computer Fleet
             </h1>
           </div>
           <div style={{ display: "flex", gap: 10 }}>

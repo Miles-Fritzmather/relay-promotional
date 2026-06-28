@@ -57,13 +57,7 @@ export function OpsNav() {
     <nav className="nav">
       <div className="nav-inner" style={{ maxWidth: 1180 }}>
         <a className="brand" href="/ops" style={{ fontSize: 22 }}>
-          <span className="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <circle cx="9" cy="12" r="5.3" stroke="currentColor" strokeWidth="2.1" />
-              <circle cx="15" cy="12" r="5.3" stroke="currentColor" strokeWidth="2.1" />
-            </svg>
-          </span>
-          <span>Relay</span>
+          <img src="/relay-logos/white_relay.svg" alt="Relay" style={{ height: 32, width: "auto" }} />
           <span className="mono" style={{ marginLeft: 4, color: "var(--coral)" }}>Ops</span>
         </a>
         <div style={{ display: "flex", gap: 10 }}>

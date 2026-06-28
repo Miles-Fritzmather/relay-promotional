@@ -143,7 +143,7 @@ export default function Home() {
         <div className="rl-hero-scrim" aria-hidden="true" />
 
         <nav className="rl-nav">
-          <a href="#top" className="rl-brand">Relay</a>
+          <a href="#top" className="rl-brand"><img src="/relay-logos/white_relay.svg" alt="Relay" style={{ height: 26, width: "auto", display: "block" }} /></a>
           <div className="rl-nav-links">
             <a href="#features"><span className="rl-num" style={{ color: "var(--coral)" }}>i.</span>Practice</a>
             <a href="#privacy"><span className="rl-num" style={{ color: "#7fa8d4" }}>ii.</span>Doctrine</a>
@@ -398,7 +398,7 @@ export default function Home() {
 
           <div className="rl-price-figure reveal">
             <div className="rl-price-amounts">
-              <span className="rl-price-was">$200</span>
+              <span className="rl-price-was">$149</span>
               <span className="rl-price-now">$50</span>
             </div>
             <div className="rl-price-unit">per user · per month</div>
@@ -446,7 +446,7 @@ export default function Home() {
         <div className="rl-wrap">
           <div className="rl-foot-cols">
             <div className="rl-foot-lead">
-              <a href="#top" className="rl-brand" style={{ color: "var(--ink)" }}>Relay</a>
+              <a href="#top" className="rl-brand"><img src="/relay-logos/black_relay.svg" alt="Relay" style={{ height: 26, width: "auto", display: "block" }} /></a>
               <p>The AI counsel that runs entirely on your machine.</p>
             </div>
             <div className="rl-foot-col" style={ac("var(--coral)")}>
